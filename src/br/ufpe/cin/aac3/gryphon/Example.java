@@ -24,8 +24,8 @@ public class Example {
 		GryphonConfig.setLogEnabled(true); 
 		
 		// Loading datasources
-		loadExampleIntegrativO();
-		//loadExampleBibtex();
+		//loadExampleIntegrativO();
+		loadExampleBibtex();
 		//loadExampleAML();
 		
 		// Aligning

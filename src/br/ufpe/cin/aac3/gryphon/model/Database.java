@@ -36,35 +36,34 @@ public abstract class Database {
 		return false;
 	}
 
-	public void mapAndAlign(URI globalOntologyURI, String name) {
-		File mappingFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + name + ".ttl");
-		File alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + name + ".owl");
-		Gryphon.mapDatabase(this, mappingFile, alignmentFile);
-		Gryphon.alignOntology(globalOntologyURI, alignmentFile.toURI(), alignmentFile);
-	}
-
-	
 	public String getHost() {
 		return host;
 	}
+	
 	public int getPort() {
 		return port;
 	}
+	
 	public String getUsername() {
 		return username;
 	}
+	
 	public String getPassword() {
 		return password;
 	}
+	
 	public String getDbName() {
 		return dbName;
 	}
+	
 	public String getJdbcURL() {
 		return jdbcURL;
 	}
+	
 	public String getJdbcDriverClass() {
 		return jdbcDriverClass;
 	}
+	
 	public InfModel getModel() {
 		return model;
 	}

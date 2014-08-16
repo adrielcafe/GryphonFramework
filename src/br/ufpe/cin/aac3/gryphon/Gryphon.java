@@ -48,7 +48,7 @@ public final class Gryphon {
 						 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
 						 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
 						 + "\n    \\_\\      \\__  `|   }"
-						 + "\n      \\\\  .--' \\__/    }       By Adriel Cafï¿½, Filipe Santana, Fred Freitas"
+						 + "\n      \\\\  .--' \\__/    }       By Adriel Café, Filipe Santana, Fred Freitas"
 						 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
 						 + "\n        `\\_____\\\\  )__\\_\\"
 						 + "\n");
@@ -66,7 +66,10 @@ public final class Gryphon {
 		if(!localDatabases.isEmpty()){
 			Util.logInfo(logger, "Mapping and Aligning databases...");
 			for (String key : localDatabases.keySet()) {
-				localDatabases.get(key).mapAndAlign(globalOntology.getURI(), key);
+				File mappingFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".ttl");
+				File alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".rdf");
+				Gryphon.mapDatabase(localDatabases.get(key), mappingFile, alignmentFile);
+				Gryphon.alignOntology(globalOntology.getURI(), alignmentFile.toURI(), alignmentFile);
 				Util.logInfo(logger, String.format("> Database %s was mapped and aligned", key));
 			}
 			Util.logInfo(logger, "Done");
@@ -75,7 +78,8 @@ public final class Gryphon {
 		if(!localOntologies.isEmpty()){
 			Util.logInfo(logger, "Aligning ontologies...");
 			for (String key : localOntologies.keySet()) {
-				localOntologies.get(key).align(globalOntology.getURI(), key);
+				File alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "ont_" + key + ".rdf");
+				Gryphon.alignOntology(globalOntology.getURI(), localOntologies.get(key).getURI(), alignmentFile);
 				Util.logInfo(logger, String.format("> Ontology %s was aligned", key));
 			}
 			Util.logInfo(logger, "Done");
@@ -85,10 +89,10 @@ public final class Gryphon {
 	public static void alignOntology(URI globalOntologyURI, URI localOntologyURI, File alignmentFile) {
 		try {
 			File jarFile = new File("libs\\alignment-api\\procalign.jar");
-			Process proc = Runtime.getRuntime().exec(String.format("java -jar \"%s\" -t \"%s\" -o \"%s\" \"%s\" \"%s\"", jarFile.getAbsolutePath(), GryphonConfig.getAlignmentThreshold(), alignmentFile.getAbsolutePath(), globalOntologyURI.toString(), localOntologyURI.toString()));
-			proc.waitFor();
+			Process process = Runtime.getRuntime().exec(String.format("java -jar \"%s\" -t \"%s\" -o \"%s\" \"%s\" \"%s\"", jarFile.getAbsolutePath(), GryphonConfig.getAlignmentThreshold(), alignmentFile.getAbsolutePath(), globalOntologyURI.toString(), localOntologyURI.toString()));
+			process.waitFor();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.logError(logger, e.getMessage());
 		}
 	}
 
@@ -97,26 +101,26 @@ public final class Gryphon {
 		
 		try {
 			File batFile = new File("libs\\d2rq\\generate-mapping" + (Util.isWindows() ? ".bat" : ""));
-			Process proc = Runtime.getRuntime().exec(String.format("\"%s\" -o \"%s\" -u \"%s\" -p \"%s\" \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), db.getUsername(), db.getPassword(), db.getJdbcURL()));
-			proc.waitFor();
+			Process process = Runtime.getRuntime().exec(String.format("\"%s\" -o \"%s\" -u \"%s\" -p \"%s\" \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), db.getUsername(), db.getPassword(), db.getJdbcURL()));
+			process.waitFor();
 			mapping = FileUtils.readWholeFileAsUTF8(mappingFile.getAbsolutePath());
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.logError(logger, e.getMessage());
 		}
 		
 		try {
 			Files.write(Paths.get(mappingFile.toURI()), mapping.getBytes());
 			String d2rqNS = "http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#";
-			String owlNS = "http://localhost:2020/vocab/";
+			String rdfNS = "http://localhost:2020/vocab/";
 			FileWriter fileWriter = new FileWriter(alignmentFile);
 			Model ttlModel = FileManager.get().loadModel(mappingFile.toURI().toString());
 			OntModel owlModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF);
-			owlModel.createOntology(owlNS);
+			owlModel.createOntology(rdfNS);
 
 			for (StmtIterator i = ttlModel.listStatements(); i.hasNext();) {
 				Statement s = i.nextStatement();
 				if (s.getPredicate().toString().equals(d2rqNS + "class"))
-					owlModel.createClass(owlNS + s.getSubject().getLocalName());
+					owlModel.createClass(rdfNS + s.getSubject().getLocalName());
 			}
 
 			for (StmtIterator i = ttlModel.listStatements(); i.hasNext();) {
@@ -126,11 +130,11 @@ public final class Gryphon {
 				
 				if (s.getPredicate().toString().equals(d2rqNS + "property")) {
 					id = s.getSubject().getLocalName();
-					owlModel.createDatatypeProperty(owlNS + id);					
+					owlModel.createDatatypeProperty(rdfNS + id);					
 				} else if (s.getPredicate().toString().equals(d2rqNS + "belongsToClassMap")) {
 					id = s.getSubject().getLocalName();
-					r = owlModel.getResource(owlNS + s.getObject().asResource().getLocalName());
-					owlModel.getDatatypeProperty(owlNS + id).setDomain(r);
+					r = owlModel.getResource(rdfNS + s.getObject().asResource().getLocalName());
+					owlModel.getDatatypeProperty(rdfNS + id).setDomain(r);
 				}
 			}
 
@@ -138,7 +142,7 @@ public final class Gryphon {
 			owlModel.close();
 			fileWriter.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Util.logError(logger, e.getMessage());
 		}
 	}
 
@@ -154,7 +158,7 @@ public final class Gryphon {
 			i.next().remove();
 		
 		for(String key : getLocalOntologies().keySet()){
-			alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "ont_" + key + ".owl");
+			alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "ont_" + key + ".rdf");
 			
 			queryLocal = queryRewrite(queryGlobal, alignmentFile);
 			
@@ -168,7 +172,7 @@ public final class Gryphon {
 		}
 		
 		for(String key : getLocalDatabases().keySet()){
-			alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".owl");
+			alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".rdf");
 			mappingFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".ttl");
 			
 			queryLocal = queryRewrite(queryGlobal, alignmentFile);
@@ -188,17 +192,17 @@ public final class Gryphon {
 	private static Query queryRewrite(Query query, File alignmentFile) {
 		try {
 			File jarFile = new File("libs\\mediation\\");
-			Process proc = Runtime.getRuntime().exec(String.format("java -cp \"%s/mediation.jar;%s/lib/*\" uk.soton.CLT \"%s\" \"%s\"", jarFile.getAbsolutePath(), jarFile.getAbsolutePath(), alignmentFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ)));
-			proc.waitFor();
+			Process process = Runtime.getRuntime().exec(String.format("java -cp \"%s/mediation.jar;%s/lib/*\" uk.soton.CLT \"%s\" \"%s\"", jarFile.getAbsolutePath(), jarFile.getAbsolutePath(), alignmentFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ)));
+			process.waitFor();
 			
-			InputStream is = proc.getInputStream();
+			InputStream is = process.getInputStream();
 	        byte b[] = new byte[is.available()];
 	        is.read(b, 0, b.length);
 	        is.close();
 	        
 	        return QueryFactory.create(new String(b)); 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.logError(logger, e.getMessage());
 			return null;
 		}
 	}
@@ -221,17 +225,17 @@ public final class Gryphon {
 		try {
 			File result = File.createTempFile("query-result-", ".xml");
 			File batFile = new File("libs\\d2rq\\d2r-query" + (Util.isWindows() ? ".bat" : ""));
-			Process proc = Runtime.getRuntime().exec(String.format("\"%s\" -f text \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ), result.getAbsoluteFile()));
-			proc.waitFor();
+			Process process = Runtime.getRuntime().exec(String.format("\"%s\" -f text \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ), result.getAbsoluteFile()));
+			process.waitFor();
 			
-			InputStream is = proc.getInputStream();
+			InputStream is = process.getInputStream();
 	        byte b[] = new byte[is.available()];
 	        is.read(b, 0, b.length);
 	        is.close();
 	        
 	        return new String(FileUtils.readWholeFileAsUTF8(result.getAbsolutePath()));
 		} catch (Exception e) {
-			e.printStackTrace();
+			Util.logError(logger, e.getMessage());
 			return null;
 		}
 	}

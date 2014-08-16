@@ -14,17 +14,12 @@ public abstract class Ontology {
 	
 	public Ontology(URI uri) {
 		this.uri = uri;
-	}
-	
-	public void align(URI globalOntologyURI, String name) {
-		File alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "ont_" + name + ".owl");
-		Gryphon.alignOntology(globalOntologyURI, getURI(), alignmentFile);
-	}
-	
+	}	
 	
 	public URI getURI() {
 		return uri;
 	}
+	
 	public OntModel getModel() {
 		return model;
 	}
