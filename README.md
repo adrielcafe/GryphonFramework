@@ -20,31 +20,32 @@ GryphonConfig.setAlignmentThreshold(0.5);
 
 #### 2. Set the sources
 ```java
-OWLOntology globalOnt = new OWLOntology(uriToGlobalOnt); 
-OWLOntology localOntBibtex = new OWLOntology(uriToBibtex); 
-OWLOntology localOntPublication = new OWLOntology(uriToPublication);
-MySQLDatabase localDBBibsql = new MySQLDatabase("localhost", 3306, "root", "root", "bibsql"); 
+OWLOntology globalOntology = new OWLOntology(uriToGlobalOntology); 
+OWLOntology localOntology1 = new OWLOntology(uriToLocalOntology1); 
+OWLOntology localOntology2 = new OWLOntology(uriToLocalOntology2);
+MySQLDatabase localDatabase1 = new MySQLDatabase("localhost", 3306, "root", "root", "localDatabase1"); 
+MySQLDatabase localDatabase2 = new MySQLDatabase("localhost", 3306, "root", "root", "localDatabase2"); 
 
-Gryphon.setGlobalOntology(globalOnt); 
-Gryphon.getLocalOWLOntologies().put("bibtex", localOntBibtex);
-Gryphon.getLocalOWLOntologies().put("publication", localOntPublication);
-Gryphon.getLocalDatabases().put("bibsql", localDBBibsql);
+Gryphon.setGlobalOntology(globalOntology); 
+Gryphon.getLocalOWLOntologies().put("localOntology1", localOntology1);
+Gryphon.getLocalOWLOntologies().put("localOntology2", localOntology2);
+Gryphon.getLocalDatabases().put("localDatabase1", localDatabase1);
+Gryphon.getLocalDatabases().put("localDatabase2", localDatabase2);
 ```
 
-#### 3. Align the the sources
+#### 3. Align the sources
 ```java
 Gryphon.alignAndMap();
 ```
 
 #### 4. Query using SPARQL
 ```java
-String queryGlobal = 
+String query = 
 	"PREFIX owl: <http://www.w3.org/2002/07/owl#> \n"
 	+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
 	+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
 	+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n"
-	+ "PREFIX global_bibtex: <http://aac3.cin.ufpe.br/ns/global_bibtex#> \n"
-	+ "SELECT DISTINCT ?x ?y \n"
-	+ "WHERE { global_bibtex:author ?x ?y . }"; 
-Gryphon.query(queryGlobal);
+	+ "SELECT DISTINCT ... \n"
+	+ "WHERE { ... }"; 
+Gryphon.query(query);
 ```
