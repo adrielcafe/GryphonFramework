@@ -4,7 +4,6 @@ Gryphon is a Framework for integrating ontologies and relational databases
 
 Supported ontologies:
 * OWL
-* RDF
 
 Supported databases: 
 * MySQL
