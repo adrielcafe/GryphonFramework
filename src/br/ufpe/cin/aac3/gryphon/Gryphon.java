@@ -10,8 +10,11 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jena.atlas.logging.Log;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.varia.NullAppender;
 
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
@@ -36,7 +39,6 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public final class Gryphon {
 	public static final String VERSION = "0.1a";
-
 	private static Logger logger = Logger.getLogger(Gryphon.class);
 	private static Ontology globalOntology = null;
 	private static Map<String, Ontology> localOntologies = null;
@@ -48,7 +50,7 @@ public final class Gryphon {
 						 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
 						 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
 						 + "\n    \\_\\      \\__  `|   }"
-						 + "\n      \\\\  .--' \\__/    }       By Adriel Café, Filipe Santana, Fred Freitas"
+						 + "\n      \\\\  .--' \\__/    }       By Adriel CafÃ©, Filipe Santana, Fred Freitas"
 						 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
 						 + "\n        `\\_____\\\\  )__\\_\\"
 						 + "\n");
@@ -56,43 +58,39 @@ public final class Gryphon {
 
 		localOntologies = new HashMap<String, Ontology>();
 		localDatabases = new HashMap<String, Database>();
-
-		PropertyConfigurator.configure("gryphon-log4j.properties");
 	}
 
 	private Gryphon() { }
 
-	public static void alignAndMap() {
+	public static void align() {
 		if(!localDatabases.isEmpty()){
-			Util.logInfo(logger, "Mapping and Aligning databases...");
+			Util.logInfo("Mapping and Aligning databases...");
 			for (String key : localDatabases.keySet()) {
 				File mappingFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".ttl");
 				File alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".rdf");
 				Gryphon.mapDatabase(localDatabases.get(key), mappingFile, alignmentFile);
 				Gryphon.alignOntology(globalOntology.getURI(), alignmentFile.toURI(), alignmentFile);
-				Util.logInfo(logger, String.format("> Database %s was mapped and aligned", key));
+				Util.logInfo(String.format("> Database %s was mapped and aligned", key));
 			}
-			Util.logInfo(logger, "Done");
 		}
 
 		if(!localOntologies.isEmpty()){
-			Util.logInfo(logger, "Aligning ontologies...");
+			Util.logInfo("Aligning ontologies...");
 			for (String key : localOntologies.keySet()) {
 				File alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "ont_" + key + ".rdf");
 				Gryphon.alignOntology(globalOntology.getURI(), localOntologies.get(key).getURI(), alignmentFile);
-				Util.logInfo(logger, String.format("> Ontology %s was aligned", key));
+				Util.logInfo(String.format("> Ontology %s was aligned", key));
 			}
-			Util.logInfo(logger, "Done");
 		}
 	}
 
 	public static void alignOntology(URI globalOntologyURI, URI localOntologyURI, File alignmentFile) {
 		try {
-			File jarFile = new File("libs\\alignment-api\\procalign.jar");
+			File jarFile = new File("libs/alignment-api/procalign.jar");
 			Process process = Runtime.getRuntime().exec(String.format("java -jar \"%s\" -t \"%s\" -o \"%s\" \"%s\" \"%s\"", jarFile.getAbsolutePath(), GryphonConfig.getAlignmentThreshold(), alignmentFile.getAbsolutePath(), globalOntologyURI.toString(), localOntologyURI.toString()));
 			process.waitFor();
 		} catch (Exception e) {
-			Util.logError(logger, e.getMessage());
+			Util.logError(e.getMessage());
 		}
 	}
 
@@ -100,12 +98,12 @@ public final class Gryphon {
 		String mapping = null;
 		
 		try {
-			File batFile = new File("libs\\d2rq\\generate-mapping" + (Util.isWindows() ? ".bat" : ""));
-			Process process = Runtime.getRuntime().exec(String.format("\"%s\" -o \"%s\" -u \"%s\" -p \"%s\" \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), db.getUsername(), db.getPassword(), db.getJdbcURL()));
+			File scriptFile = new File("libs/d2rq/generate-mapping" + (Util.isWindows() ? ".bat" : ""));
+			Process process = Runtime.getRuntime().exec(String.format("%s \"%s\" -o \"%s\" -u \"%s\" -p \"%s\" \"%s\"", (Util.isWindows() ? "" : "bash"), scriptFile.getAbsolutePath(), mappingFile.getAbsolutePath(), db.getUsername(), db.getPassword(), db.getJdbcURL()));
 			process.waitFor();
 			mapping = FileUtils.readWholeFileAsUTF8(mappingFile.getAbsolutePath());
 		} catch (Exception e) {
-			Util.logError(logger, e.getMessage());
+			Util.logError(e.getMessage());
 		}
 		
 		try {
@@ -142,7 +140,7 @@ public final class Gryphon {
 			owlModel.close();
 			fileWriter.close();
 		} catch (IOException e) {
-			Util.logError(logger, e.getMessage());
+			Util.logError(e.getMessage());
 		}
 	}
 
@@ -163,9 +161,9 @@ public final class Gryphon {
 			queryLocal = queryRewrite(queryGlobal, alignmentFile);
 			
 			if(queryLocal != null){
-				Util.logInfo(logger, "REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
+				Util.logInfo("REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
 				resultSet = execSPARQLQuery(queryLocal, getLocalOntologies().get(key).getModel());
-				Util.logInfo(logger, "QUERY RESULT FOR " + key + ":\n" + ResultSetFormatter.asText(resultSet) + "\n");
+				Util.logInfo("QUERY RESULT FOR " + key + ":\n" + ResultSetFormatter.asText(resultSet) + "\n");
 			}
 			
 			//resultRewrite(resultSet, alignmentFile);
@@ -178,9 +176,9 @@ public final class Gryphon {
 			queryLocal = queryRewrite(queryGlobal, alignmentFile);
 			
 			if(queryLocal != null){
-				Util.logInfo(logger, "REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
+				Util.logInfo("REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
 				result = execSQLQuery(queryLocal, mappingFile);
-				Util.logInfo(logger, "QUERY RESULT FOR " + key + ":\n" + result + "\n");
+				Util.logInfo("QUERY RESULT FOR " + key + ":\n" + result + "\n");
 			}
 			
 			//resultRewrite(resultSet, alignmentFile);
@@ -191,7 +189,7 @@ public final class Gryphon {
 
 	private static Query queryRewrite(Query query, File alignmentFile) {
 		try {
-			File jarFile = new File("libs\\mediation\\");
+			File jarFile = new File("libs/mediation/");
 			Process process = Runtime.getRuntime().exec(String.format("java -cp \"%s/mediation.jar;%s/lib/*\" uk.soton.CLT \"%s\" \"%s\"", jarFile.getAbsolutePath(), jarFile.getAbsolutePath(), alignmentFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ)));
 			process.waitFor();
 			
@@ -202,7 +200,7 @@ public final class Gryphon {
 	        
 	        return QueryFactory.create(new String(b)); 
 		} catch (Exception e) {
-			Util.logError(logger, e.getMessage());
+			Util.logError(e.getMessage());
 			return null;
 		}
 	}
@@ -235,7 +233,7 @@ public final class Gryphon {
 	        
 	        return new String(FileUtils.readWholeFileAsUTF8(result.getAbsolutePath()));
 		} catch (Exception e) {
-			Util.logError(logger, e.getMessage());
+			Util.logError(e.getMessage());
 			return null;
 		}
 	}

@@ -5,6 +5,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
+import org.apache.log4j.PropertyConfigurator;
+
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 import br.ufpe.cin.aac3.gryphon.model.impl.MySQLDatabase;
@@ -16,6 +18,10 @@ import com.hp.hpl.jena.query.QueryFactory;
 
 public class Example {
 	private static final URI currentURI = new File("").toURI();
+
+	static {
+		PropertyConfigurator.configure("log4j.properties");
+	}
 	
 	public static void main(String[] args) {
 		// Configuring
@@ -30,7 +36,7 @@ public class Example {
 		
 		// Aligning
 		//if(GryphonConfig.getWorkingDirectory().toFile().listFiles().length == 0)
-			Gryphon.alignAndMap();
+			Gryphon.align();
 
 		// Querying the GLOBAL ontology
 		String strQuery = 
@@ -66,7 +72,7 @@ public class Example {
 				+"	vocab:organism_genus ?genus ."
 				+"	}";*/
 		Query query = QueryFactory.create(strQuery);
-		Gryphon.query(query);
+		//Gryphon.query(query);
 	} 
 	
 	private static void loadExampleIntegrativO() {
@@ -90,9 +96,9 @@ public class Example {
 	
 	private static void loadExampleBibtex() {
 		try {
-			Ontology globalOntBibtex = new OWLOntology(new URI(currentURI.toString() + "examples/bibtex/global_bibtex.owl"));
-			Ontology localOntBibtex = new OWLOntology(new URI(currentURI.toString() + "examples/bibtex/bibtex.owl"));
-			Ontology localOntPublication = new OWLOntology(new URI(currentURI.toString() + "examples/bibtex/publication.owl"));
+			Ontology globalOntBibtex = new OWLOntology(new URI(currentURI.toString() + "examples/global_bibtex.owl"));
+			Ontology localOntBibtex = new OWLOntology(new URI(currentURI.toString() + "examples/bibtex.owl"));
+			Ontology localOntPublication = new OWLOntology(new URI(currentURI.toString() + "examples/publication.owl"));
 			Database localDBBibsql = new MySQLDatabase("localhost", 3306, "root", "", "bibtex");
 			
 			Gryphon.setGlobalOntology(globalOntBibtex);
