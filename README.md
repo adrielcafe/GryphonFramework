@@ -15,6 +15,7 @@ Supported databases:
 ```java
 GryphonConfig.setWorkingDirectory(Paths.get("alignments"));
 GryphonConfig.setAlignmentThreshold(0.5);
+GryphonConfig.setLogEnabled(true); 
 ```
 
 #### 2. Set the sources
@@ -46,5 +47,6 @@ String query =
 	+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n"
 	+ "SELECT DISTINCT ... \n"
 	+ "WHERE { ... }"; 
+Query query = QueryFactory.create(strQuery);
 Gryphon.query(query);
 ```

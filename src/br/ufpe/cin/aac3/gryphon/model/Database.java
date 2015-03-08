@@ -1,11 +1,5 @@
 package br.ufpe.cin.aac3.gryphon.model;
 
-import java.io.File;
-import java.net.URI;
-
-import br.ufpe.cin.aac3.gryphon.Gryphon;
-import br.ufpe.cin.aac3.gryphon.GryphonConfig;
-
 import com.hp.hpl.jena.rdf.model.InfModel;
 
 public abstract class Database {

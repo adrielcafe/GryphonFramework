@@ -11,7 +11,6 @@ import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 import br.ufpe.cin.aac3.gryphon.model.impl.MySQLDatabase;
 import br.ufpe.cin.aac3.gryphon.model.impl.OWLOntology;
-import br.ufpe.cin.aac3.gryphon.model.impl.PostgreSQLDatabase;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -19,24 +18,20 @@ import com.hp.hpl.jena.query.QueryFactory;
 public class Example {
 	private static final URI currentURI = new File("").toURI();
 
-	static {
-		PropertyConfigurator.configure("log4j.properties");
-	}
-	
 	public static void main(String[] args) {
+		PropertyConfigurator.configure("log4j.properties");
+		
 		// Configuring
 		GryphonConfig.setWorkingDirectory(Paths.get("alignments"));
 		GryphonConfig.setAlignmentThreshold(0.5);
 		GryphonConfig.setLogEnabled(true); 
 		
-		// Loading datasources
-		//loadExampleIntegrativO();
-		loadExampleBibtex();
-		//loadExampleAML();
+		// Loading sources
+		loadExample1();
+		//loadExample2();
 		
 		// Aligning
-		//if(GryphonConfig.getWorkingDirectory().toFile().listFiles().length == 0)
-			Gryphon.align();
+		//Gryphon.align();
 
 		// Querying the GLOBAL ontology
 		String strQuery = 
@@ -47,35 +42,43 @@ public class Example {
 				+"	PREFIX biotop: <http://purl.org/biotop/biotop.owl#>"
 				+"	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+"	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-				+"	SELECT ?x WHERE { ?x rdf:type global_bibtex:Article }";
-		
-				/*+"	SELECT ?species" 
-				+"	WHERE {"
-				//+"		OPTIONAL {"
-				//+"			?species rdfs:subClassOf btl2:TaxonValueRegion ."
-				//+"		} ."
-				//+"		OPTIONAL {"
-				+"			?s biotop:SpeciesDrosophilaMelanogasterValueRegion ?species ."
-				+"			FILTER regex(?species, \"^Drosophila\") ."
-				//+"		} ."
-				//+"		OPTIONAL {"
-				//+"			?organism rdf:type btl2:Organism ;"
-				//+"			btl2:TaxonValueRegion \"Drosophila\" ;"
-				//+"			biotop:SpeciesDrosophilaMelanogasterValueRegion ?species ."
-				//+"		}"
-				+"	}";*/
-		
-				/*+"	SELECT ?organism ?genus" 
-				+"	WHERE {"
-				+"	?organism rdf:type vocab:organism ;"
-				+"	vocab:organism_species \"larissa\" ;"
-				+"	vocab:organism_genus ?genus ."
-				+"	}";*/
+				+"	SELECT ?x ?y"
+				+ " WHERE { ?x rdf:type ?y }";
 		Query query = QueryFactory.create(strQuery);
-		//Gryphon.query(query);
+		Gryphon.query(query);
 	} 
 	
-	private static void loadExampleIntegrativO() {
+	private static void loadExample1() {
+		try {
+			Ontology globalOntBibtex = new OWLOntology(new URI(currentURI.toString() + "examples/ex1/global_bibtex.owl"));
+			Ontology localOnt1 = new OWLOntology(new URI(currentURI.toString() + "examples/ex1/bibtex.owl"));
+			Ontology localOnt2 = new OWLOntology(new URI(currentURI.toString() + "examples/ex1/publication.owl"));
+			Database localDB1 = new MySQLDatabase("localhost", 3306, "root", "", "bibtex");
+			
+			Gryphon.setGlobalOntology(globalOntBibtex);
+			
+			Gryphon.addLocalOntology("bibtex", localOnt1);
+			Gryphon.addLocalOntology("publication", localOnt2);
+			Gryphon.addLocalDatabase("bibsql", localDB1);
+		} catch(URISyntaxException e){ }
+	}
+	
+	private static void loadExample2() {
+		try {
+			Ontology global = new OWLOntology(new URI(currentURI.toString() + "examples/ex2/human.owl"));
+			Ontology localOnt1 = new OWLOntology(new URI(currentURI.toString() + "examples/ex2/fly.owl"));
+			Ontology localOnt2 = new OWLOntology(new URI(currentURI.toString() + "examples/ex2/mouse.owl"));
+			Ontology localOnt3 = new OWLOntology(new URI(currentURI.toString() + "examples/ex2/zebrafish.owl"));
+			
+			Gryphon.setGlobalOntology(global);
+
+			Gryphon.addLocalOntology("fly", localOnt1);
+			Gryphon.addLocalOntology("mouse", localOnt2);
+			Gryphon.addLocalOntology("zebrafish", localOnt3);
+		} catch(URISyntaxException e){ e.printStackTrace(); }
+	}
+	
+	/*private static void loadExampleIntegrativO() {
 		try {
 			Ontology globalOntIntegrativO = new OWLOntology(new URI(currentURI.toString() + "examples/integrativOv2.owl"));
 			//Ontology localOntGO = new OWLOntology(new URI(currentURI.toString() + "examples/gene-ontology.owl"));
@@ -92,31 +95,5 @@ public class Example {
 			Gryphon.addLocalDatabase("reactome", localDBReactome);
 			Gryphon.addLocalDatabase("flybase", localDBFlyBase);
 		} catch(URISyntaxException e){ }
-	}
-	
-	private static void loadExampleBibtex() {
-		try {
-			Ontology globalOntBibtex = new OWLOntology(new URI(currentURI.toString() + "examples/global_bibtex.owl"));
-			Ontology localOntBibtex = new OWLOntology(new URI(currentURI.toString() + "examples/bibtex.owl"));
-			Ontology localOntPublication = new OWLOntology(new URI(currentURI.toString() + "examples/publication.owl"));
-			Database localDBBibsql = new MySQLDatabase("localhost", 3306, "root", "", "bibtex");
-			
-			Gryphon.setGlobalOntology(globalOntBibtex);
-			
-			Gryphon.addLocalOntology("bibtex", localOntBibtex);
-			Gryphon.addLocalOntology("publication", localOntPublication);
-			Gryphon.addLocalDatabase("bibsql", localDBBibsql);
-		} catch(URISyntaxException e){ }
-	}
-	
-	private static void loadExampleAML() {
-		try {
-			Ontology global = new OWLOntology(new URI("file:///E:/Documentos/Desktop/AML-Jar-master/store/anatomy/human.owl"));
-			Ontology local = new OWLOntology(new URI("file:///E:/Documentos/Desktop/AML-Jar-master/store/anatomy/mouse.owl"));
-			
-			Gryphon.setGlobalOntology(global);
-			
-			Gryphon.addLocalOntology("mouse", local);
-		} catch(URISyntaxException e){ e.printStackTrace(); }
-	}
+	}*/
 }

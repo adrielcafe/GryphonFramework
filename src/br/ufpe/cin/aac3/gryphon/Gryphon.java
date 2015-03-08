@@ -10,12 +10,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.jena.atlas.logging.Log;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.varia.NullAppender;
-
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
@@ -39,23 +33,22 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public final class Gryphon {
 	public static final String VERSION = "0.1a";
-	private static Logger logger = Logger.getLogger(Gryphon.class);
 	private static Ontology globalOntology = null;
 	private static Map<String, Ontology> localOntologies = null;
 	private static Map<String, Database> localDatabases = null;
 
 	static {
-		/*System.out.println(
-						   "\n          _          (`-. "
-						 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
-						 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
-						 + "\n    \\_\\      \\__  `|   }"
-						 + "\n      \\\\  .--' \\__/    }       By Adriel Caf√©, Filipe Santana, Fred Freitas"
-						 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
-						 + "\n        `\\_____\\\\  )__\\_\\"
-						 + "\n");
-		*/
-
+		if(GryphonConfig.isLogEnabled()){
+			System.out.println(
+							   "\n          _          (`-. "
+							 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
+							 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
+							 + "\n    \\_\\      \\__  `|   }"
+							 + "\n      \\\\  .--' \\__/    }       By Adriel CafÈ, Filipe Santana, Fred Freitas"
+							 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
+							 + "\n        `\\_____\\\\  )__\\_\\"
+							 + "\n");
+		}
 		localOntologies = new HashMap<String, Ontology>();
 		localDatabases = new HashMap<String, Database>();
 	}
@@ -86,8 +79,10 @@ public final class Gryphon {
 
 	public static void alignOntology(URI globalOntologyURI, URI localOntologyURI, File alignmentFile) {
 		try {
-			File jarFile = new File("libs/alignment-api/procalign.jar");
-			Process process = Runtime.getRuntime().exec(String.format("java -jar \"%s\" -t \"%s\" -o \"%s\" \"%s\" \"%s\"", jarFile.getAbsolutePath(), GryphonConfig.getAlignmentThreshold(), alignmentFile.getAbsolutePath(), globalOntologyURI.toString(), localOntologyURI.toString()));
+			File jarFile = new File("libs/aml/AgreementMakerLight.jar");
+			String cmd = String.format("cd \"%s\" && java -jar \"%s\" -s \"%s\" -t \"%s\" -o \"%s\" -m", jarFile.getParentFile().getAbsolutePath(), jarFile.getAbsolutePath(), new File(globalOntologyURI).getAbsolutePath(), new File(localOntologyURI).getAbsolutePath(), alignmentFile.getAbsolutePath());
+			ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", cmd);
+			Process process = processBuilder.start();
 			process.waitFor();
 		} catch (Exception e) {
 			Util.logError(e.getMessage());
@@ -186,6 +181,29 @@ public final class Gryphon {
 		
 		return modelResult;
 	}
+	
+	private static ResultSet execSPARQLQuery(Query query, Model model) {
+		return QueryExecutionFactory.create(query, model).execSelect();
+	}
+	
+	private static String execSQLQuery(Query query, File mappingFile) {
+		try {
+			File result = File.createTempFile("query-result-", ".xml");
+			File batFile = new File("libs\\d2rq\\d2r-query" + (Util.isWindows() ? ".bat" : ""));
+			Process process = Runtime.getRuntime().exec(String.format("\"%s\" -f text \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ), result.getAbsoluteFile()));
+			process.waitFor();
+			
+			InputStream is = process.getInputStream();
+	        byte b[] = new byte[is.available()];
+	        is.read(b, 0, b.length);
+	        is.close();
+	        
+	        return new String(FileUtils.readWholeFileAsUTF8(result.getAbsolutePath()));
+		} catch (Exception e) {
+			Util.logError(e.getMessage());
+			return null;
+		}
+	}
 
 	private static Query queryRewrite(Query query, File alignmentFile) {
 		try {
@@ -214,29 +232,6 @@ public final class Gryphon {
 		
 		return ModelFactory.createOntologyModel();
 	}*/
-	
-	private static ResultSet execSPARQLQuery(Query query, Model model) {
-		return QueryExecutionFactory.create(query, model).execSelect();
-	}
-	
-	private static String execSQLQuery(Query query, File mappingFile) {
-		try {
-			File result = File.createTempFile("query-result-", ".xml");
-			File batFile = new File("libs\\d2rq\\d2r-query" + (Util.isWindows() ? ".bat" : ""));
-			Process process = Runtime.getRuntime().exec(String.format("\"%s\" -f text \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ), result.getAbsoluteFile()));
-			process.waitFor();
-			
-			InputStream is = process.getInputStream();
-	        byte b[] = new byte[is.available()];
-	        is.read(b, 0, b.length);
-	        is.close();
-	        
-	        return new String(FileUtils.readWholeFileAsUTF8(result.getAbsolutePath()));
-		} catch (Exception e) {
-			Util.logError(e.getMessage());
-			return null;
-		}
-	}
 	
 	public static Ontology getGlobalOntology() {
 		return globalOntology;
