@@ -21,29 +21,29 @@ public class Example {
 	public static void main(String[] args) {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		// Configuring
+		// 1. Configure
 		GryphonConfig.setWorkingDirectory(Paths.get("alignments"));
 		GryphonConfig.setAlignmentThreshold(0.5);
 		GryphonConfig.setLogEnabled(true); 
 		
-		// Loading sources
-		loadExample1();
-		//loadExample2();
+		// 2. Set the sources
+		//oadExample1();
+		loadExample2();
 		
-		// Aligning
+		// 3. Align the sources
 		//Gryphon.align();
 
-		// Querying the GLOBAL ontology
+		// 4. Query using SPARQL
 		String strQuery = 
-				"PREFIX vocab: <http://localhost:2020/vocab/>"
-				+"	PREFIX global_bibtex: <http://aac3.cin.ufpe.br/ns/global_bibtex#>"
-				+"	PREFIX integrativo: <http://www.cin.ufpe.br/~fss3/integrativO#>"
-				+"	PREFIX btl2: <http://purl.org/biotop/btl2.owl#>"
-				+"	PREFIX biotop: <http://purl.org/biotop/biotop.owl#>"
-				+"	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+"	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-				+"	SELECT ?x ?y"
-				+ " WHERE { ?x rdf:type ?y }";
+				 "PREFIX vocab: <http://localhost:2020/vocab/> "
+				+"PREFIX global_bibtex: <http://aac3.cin.ufpe.br/ns/global_bibtex#> "
+				+"PREFIX integrativo: <http://www.cin.ufpe.br/~fss3/integrativO#> "
+				+"PREFIX btl2: <http://purl.org/biotop/btl2.owl#> "
+				+"PREFIX biotop: <http://purl.org/biotop/biotop.owl#> "
+				+"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+				+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+				+"SELECT ?x ?y \n"
+				+"WHERE { ?x rdf:type ?y }";
 		Query query = QueryFactory.create(strQuery);
 		Gryphon.query(query);
 	} 

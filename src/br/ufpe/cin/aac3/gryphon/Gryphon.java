@@ -38,17 +38,18 @@ public final class Gryphon {
 	private static Map<String, Database> localDatabases = null;
 
 	static {
-		if(GryphonConfig.isLogEnabled()){
-			System.out.println(
-							   "\n          _          (`-. "
-							 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
-							 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
-							 + "\n    \\_\\      \\__  `|   }"
-							 + "\n      \\\\  .--' \\__/    }       By Adriel Café, Filipe Santana, Fred Freitas"
-							 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
-							 + "\n        `\\_____\\\\  )__\\_\\"
-							 + "\n");
-		}
+//		if(GryphonConfig.isLogEnabled()){
+//			System.out.println(
+//				   "\n          _          (`-. "
+//				 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
+//				 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
+//				 + "\n    \\_\\      \\__  `|   }"
+//				 + "\n      \\\\  .--' \\__/    }       By Adriel Café, Filipe Santana, Fred Freitas"
+//				 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
+//				 + "\n        `\\_____\\\\  )__\\_\\"
+//				 + "\n"
+//			);
+//		}
 		localOntologies = new HashMap<String, Ontology>();
 		localDatabases = new HashMap<String, Database>();
 	}
@@ -96,7 +97,7 @@ public final class Gryphon {
 			File scriptFile = new File("libs/d2rq/generate-mapping" + (Util.isWindows() ? ".bat" : ""));
 			Process process = Runtime.getRuntime().exec(String.format("%s \"%s\" -o \"%s\" -u \"%s\" -p \"%s\" \"%s\"", (Util.isWindows() ? "" : "bash"), scriptFile.getAbsolutePath(), mappingFile.getAbsolutePath(), db.getUsername(), db.getPassword(), db.getJdbcURL()));
 			process.waitFor();
-			mapping = FileUtils.readWholeFileAsUTF8(mappingFile.getAbsolutePath());
+			mapping = com.hp.hpl.jena.util.FileUtils.readWholeFileAsUTF8(mappingFile.getAbsolutePath());
 		} catch (Exception e) {
 			Util.logError(e.getMessage());
 		}
@@ -159,9 +160,10 @@ public final class Gryphon {
 				Util.logInfo("REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
 				resultSet = execSPARQLQuery(queryLocal, getLocalOntologies().get(key).getModel());
 				Util.logInfo("QUERY RESULT FOR " + key + ":\n" + ResultSetFormatter.asText(resultSet) + "\n");
+				
+				// TODO
+				ResultSetFormatter.asRDF(modelResult, resultSet);
 			}
-			
-			//resultRewrite(resultSet, alignmentFile);
 		}
 		
 		for(String key : getLocalDatabases().keySet()){
@@ -175,8 +177,6 @@ public final class Gryphon {
 				result = execSQLQuery(queryLocal, mappingFile);
 				Util.logInfo("QUERY RESULT FOR " + key + ":\n" + result + "\n");
 			}
-			
-			//resultRewrite(resultSet, alignmentFile);
 		}
 		
 		return modelResult;
@@ -207,10 +207,12 @@ public final class Gryphon {
 
 	private static Query queryRewrite(Query query, File alignmentFile) {
 		try {
-			File jarFile = new File("libs/mediation/");
-			Process process = Runtime.getRuntime().exec(String.format("java -cp \"%s/mediation.jar;%s/lib/*\" uk.soton.CLT \"%s\" \"%s\"", jarFile.getAbsolutePath(), jarFile.getAbsolutePath(), alignmentFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ)));
+			File jarFile = new File("libs/mediation/Mediation.jar");
+			String cmd = String.format("cd \"%s\" && java -jar \"%s\" \"%s\" \"%s\"", jarFile.getParentFile().getAbsolutePath(), jarFile.getAbsolutePath(), alignmentFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ).replace("\n", " "));
+			ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", cmd);
+			Process process = processBuilder.start();
 			process.waitFor();
-			
+			System.out.println(cmd);
 			InputStream is = process.getInputStream();
 	        byte b[] = new byte[is.available()];
 	        is.read(b, 0, b.length);
@@ -218,20 +220,11 @@ public final class Gryphon {
 	        
 	        return QueryFactory.create(new String(b)); 
 		} catch (Exception e) {
+			e.printStackTrace();
 			Util.logError(e.getMessage());
 			return null;
 		}
 	}
-	
-	/*private static OntModel resultRewrite(ResultSet rs, File alignmentFile){
-		Resource r = ResultSetFormatter.asRDF(rs.getResourceModel(), rs);
-		for(StmtIterator i = r.listProperties(); i.hasNext();){
-			Statement s = i.next();
-			System.out.println(s.getPredicate());	
-		}
-		
-		return ModelFactory.createOntologyModel();
-	}*/
 	
 	public static Ontology getGlobalOntology() {
 		return globalOntology;
