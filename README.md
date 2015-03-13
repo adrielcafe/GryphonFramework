@@ -1,4 +1,4 @@
-![](https://photos-5.dropbox.com/t/2/AADiBA0IF9OuBOex3D8ZOj9BEmKarYRRjMO1bAcAi_Txmw/12/98073648/png/1024x768/3/1425592800/0/2/Gryphon.png/CLD44S4gASACIAMoAQ/pWKjWXkkFqA98JFTG7C6I29El6Mf-kVgJuiw8oX3KDE)
+![](http://github.com/adrielcafe/GryphonFramework/raw/master/gryphon.png)
 
 Gryphon is a Framework for integrating ontologies and relational databases
 
@@ -14,7 +14,6 @@ Supported databases:
 #### 1. Configure
 ```java
 GryphonConfig.setWorkingDirectory(Paths.get("alignments"));
-GryphonConfig.setAlignmentThreshold(0.5);
 GryphonConfig.setLogEnabled(true); 
 ```
 
@@ -23,14 +22,14 @@ GryphonConfig.setLogEnabled(true);
 OWLOntology globalOntology = new OWLOntology(uriToGlobalOntology); 
 OWLOntology localOntology1 = new OWLOntology(uriToLocalOntology1); 
 OWLOntology localOntology2 = new OWLOntology(uriToLocalOntology2);
-MySQLDatabase localDatabase1 = new MySQLDatabase("localhost", 3306, "root", "root", "localDatabase1"); 
-PostgreSQLDatabase localDatabase2 = new PostgreSQLDatabase("localhost", 3306, "root", "root", "localDatabase2"); 
+MySQLDatabase localDatabase1 = new MySQLDatabase("localhost", 3306, "root", "", "localDatabase1"); 
+PostgreSQLDatabase localDatabase2 = new PostgreSQLDatabase("localhost", 3306, "root", "", "localDatabase2"); 
 
 Gryphon.setGlobalOntology(globalOntology); 
-Gryphon.getLocalOWLOntologies().put("localOntology1", localOntology1);
-Gryphon.getLocalOWLOntologies().put("localOntology2", localOntology2);
-Gryphon.getLocalDatabases().put("localDatabase1", localDatabase1);
-Gryphon.getLocalDatabases().put("localDatabase2", localDatabase2);
+Gryphon.addLocalOntology("localOntology1", localOntology1);
+Gryphon.addLocalOntology("localOntology2", localOntology2);
+Gryphon.addLocalDatabase("localDatabase1", localDatabase1);
+Gryphon.addLocalDatabase("localDatabase2", localDatabase2);
 ```
 
 #### 3. Align the sources
@@ -48,5 +47,6 @@ String query =
 	+ "SELECT DISTINCT ... "
 	+ "WHERE { ... } "; 
 Query query = QueryFactory.create(strQuery);
-Gryphon.query(query);
+OntModel result = Gryphon.query(query);
+GryphonUtil.saveModel(result, new File("result.rdf"));
 ```

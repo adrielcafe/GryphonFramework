@@ -7,8 +7,16 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
@@ -32,24 +40,25 @@ import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public final class Gryphon {
-	public static final String VERSION = "0.1a";
+	public static final String VERSION = "1.0a";
+	private static final OWLOntologyManager owlManager = OWLManager.createOWLOntologyManager();
 	private static Ontology globalOntology = null;
 	private static Map<String, Ontology> localOntologies = null;
 	private static Map<String, Database> localDatabases = null;
 
 	static {
-//		if(GryphonConfig.isLogEnabled()){
-//			System.out.println(
-//				   "\n          _          (`-. "
-//				 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
-//				 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
-//				 + "\n    \\_\\      \\__  `|   }"
-//				 + "\n      \\\\  .--' \\__/    }       By Adriel Café, Filipe Santana, Fred Freitas"
-//				 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
-//				 + "\n        `\\_____\\\\  )__\\_\\"
-//				 + "\n"
-//			);
-//		}
+		if(GryphonConfig.isLogEnabled()){
+			System.out.println(
+				   "\n          _          (`-. "
+				 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
+				 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
+				 + "\n    \\_\\      \\__  `|   }"
+				 + "\n      \\\\  .--' \\__/    }       By Adriel Café, Filipe Santana, Fred Freitas"
+				 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
+				 + "\n        `\\_____\\\\  )__\\_\\"
+				 + "\n"
+			);
+		}
 		localOntologies = new HashMap<String, Ontology>();
 		localDatabases = new HashMap<String, Database>();
 	}
@@ -58,22 +67,22 @@ public final class Gryphon {
 
 	public static void align() {
 		if(!localDatabases.isEmpty()){
-			Util.logInfo("Mapping and Aligning databases...");
+			GryphonUtil.logInfo("Mapping and Aligning databases...");
 			for (String key : localDatabases.keySet()) {
 				File mappingFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".ttl");
 				File alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "db_" + key + ".rdf");
 				Gryphon.mapDatabase(localDatabases.get(key), mappingFile, alignmentFile);
 				Gryphon.alignOntology(globalOntology.getURI(), alignmentFile.toURI(), alignmentFile);
-				Util.logInfo(String.format("> Database %s was mapped and aligned", key));
+				GryphonUtil.logInfo(String.format("> Database %s was mapped and aligned", key));
 			}
 		}
 
 		if(!localOntologies.isEmpty()){
-			Util.logInfo("Aligning ontologies...");
+			GryphonUtil.logInfo("Aligning ontologies...");
 			for (String key : localOntologies.keySet()) {
 				File alignmentFile = new File(GryphonConfig.getWorkingDirectory().toFile(), "ont_" + key + ".rdf");
 				Gryphon.alignOntology(globalOntology.getURI(), localOntologies.get(key).getURI(), alignmentFile);
-				Util.logInfo(String.format("> Ontology %s was aligned", key));
+				GryphonUtil.logInfo(String.format("> Ontology %s was aligned", key));
 			}
 		}
 	}
@@ -86,7 +95,7 @@ public final class Gryphon {
 			Process process = processBuilder.start();
 			process.waitFor();
 		} catch (Exception e) {
-			Util.logError(e.getMessage());
+			GryphonUtil.logError(e.getMessage());
 		}
 	}
 
@@ -94,12 +103,12 @@ public final class Gryphon {
 		String mapping = null;
 		
 		try {
-			File scriptFile = new File("libs/d2rq/generate-mapping" + (Util.isWindows() ? ".bat" : ""));
-			Process process = Runtime.getRuntime().exec(String.format("%s \"%s\" -o \"%s\" -u \"%s\" -p \"%s\" \"%s\"", (Util.isWindows() ? "" : "bash"), scriptFile.getAbsolutePath(), mappingFile.getAbsolutePath(), db.getUsername(), db.getPassword(), db.getJdbcURL()));
+			File scriptFile = new File("libs/d2rq/generate-mapping" + (GryphonUtil.isWindows() ? ".bat" : ""));
+			Process process = Runtime.getRuntime().exec(String.format("%s \"%s\" -o \"%s\" -u \"%s\" -p \"%s\" \"%s\"", (GryphonUtil.isWindows() ? "" : "bash"), scriptFile.getAbsolutePath(), mappingFile.getAbsolutePath(), db.getUsername(), db.getPassword(), db.getJdbcURL()));
 			process.waitFor();
-			mapping = com.hp.hpl.jena.util.FileUtils.readWholeFileAsUTF8(mappingFile.getAbsolutePath());
+			mapping = FileUtils.readWholeFileAsUTF8(mappingFile.getAbsolutePath());
 		} catch (Exception e) {
-			Util.logError(e.getMessage());
+			GryphonUtil.logError(e.getMessage());
 		}
 		
 		try {
@@ -134,19 +143,18 @@ public final class Gryphon {
 
 			owlModel.write(fileWriter, "RDF/XML-ABBREV");
 			owlModel.close();
-			fileWriter.close();
 		} catch (IOException e) {
-			Util.logError(e.getMessage());
+			GryphonUtil.logError(e.getMessage());
 		}
 	}
 
 	public static OntModel query(Query queryGlobal){
 		File alignmentFile = null;
 		File mappingFile = null;
-		OntModel modelResult = globalOntology.getModel();
+		OntModel modelResult = ModelFactory.createOntologyModel();		
 		Query queryLocal = null;
-		ResultSet resultSet = null;
-		String result = null;
+		ResultSet ontResult = null;
+		OntModel dbResult = null;
 		
 		for(ExtendedIterator<Individual> i = modelResult.listIndividuals(); i.hasNext();)
 			i.next().remove();
@@ -157,12 +165,10 @@ public final class Gryphon {
 			queryLocal = queryRewrite(queryGlobal, alignmentFile);
 			
 			if(queryLocal != null){
-				Util.logInfo("REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
-				resultSet = execSPARQLQuery(queryLocal, getLocalOntologies().get(key).getModel());
-				Util.logInfo("QUERY RESULT FOR " + key + ":\n" + ResultSetFormatter.asText(resultSet) + "\n");
-				
-				// TODO
-				ResultSetFormatter.asRDF(modelResult, resultSet);
+				GryphonUtil.logInfo("REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
+				ontResult = execSPARQLQuery(queryLocal, getLocalOntologies().get(key).getModel());
+				modelResult.add(ontResult.getResourceModel());
+				GryphonUtil.logInfo("QUERY RESULT FOR " + key + ":\n" + ResultSetFormatter.asText(ontResult) + "\n");
 			}
 		}
 		
@@ -173,12 +179,24 @@ public final class Gryphon {
 			queryLocal = queryRewrite(queryGlobal, alignmentFile);
 			
 			if(queryLocal != null){
-				Util.logInfo("REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
-				result = execSQLQuery(queryLocal, mappingFile);
-				Util.logInfo("QUERY RESULT FOR " + key + ":\n" + result + "\n");
+				GryphonUtil.logInfo("REWRITTEN QUERY FOR " + key + ":\n" + queryLocal.serialize() + "\n");
+				dbResult = execSQLQuery(queryLocal, mappingFile);
+				modelResult.add(dbResult);
+				GryphonUtil.logInfo("QUERY RESULT FOR " + key + ":\n" + dbResult + "\n");
 			}
 		}
-		
+
+		List<Statement> sr = new ArrayList<Statement>();
+		for (StmtIterator i = modelResult.listStatements(); i.hasNext();) {
+			try {
+				Statement s = i.nextStatement();
+				Resource r = s.getResource();
+				if(r.getURI().toString().contains("www.w3.org")){
+					sr.add(s);
+				}
+			} catch(Exception e) { }
+		}
+		modelResult.remove(sr);
 		return modelResult;
 	}
 	
@@ -186,21 +204,24 @@ public final class Gryphon {
 		return QueryExecutionFactory.create(query, model).execSelect();
 	}
 	
-	private static String execSQLQuery(Query query, File mappingFile) {
+	private static OntModel execSQLQuery(Query query, File mappingFile) {
 		try {
-			File result = File.createTempFile("query-result-", ".xml");
-			File batFile = new File("libs\\d2rq\\d2r-query" + (Util.isWindows() ? ".bat" : ""));
-			Process process = Runtime.getRuntime().exec(String.format("\"%s\" -f text \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ), result.getAbsoluteFile()));
+			OntModel resultModel = ModelFactory.createOntologyModel();
+			File ttlResultFile = File.createTempFile("gryphon-query-result-", ".ttl");
+			File rdfResultFile = File.createTempFile("gryphon-query-result-", ".rdf");
+			File batFile = new File("libs\\d2rq\\d2r-query" + (GryphonUtil.isWindows() ? ".bat" : ""));
+			Process process = Runtime.getRuntime().exec(String.format("\"%s\" -f ttl \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ), ttlResultFile.getAbsoluteFile()));
 			process.waitFor();
 			
-			InputStream is = process.getInputStream();
-	        byte b[] = new byte[is.available()];
-	        is.read(b, 0, b.length);
-	        is.close();
-	        
-	        return new String(FileUtils.readWholeFileAsUTF8(result.getAbsolutePath()));
+			OWLOntology ttlOntology = owlManager.loadOntologyFromOntologyDocument(ttlResultFile);
+			RDFXMLDocumentFormat rdfXmlFormat = new RDFXMLDocumentFormat();
+			owlManager.saveOntology(ttlOntology, rdfXmlFormat, IRI.create(rdfResultFile));
+			
+			Model m = FileManager.get().loadModel(rdfResultFile.toURI().toString());
+			resultModel.add(m);
+	        return resultModel;
 		} catch (Exception e) {
-			Util.logError(e.getMessage());
+			GryphonUtil.logError(e.getMessage());
 			return null;
 		}
 	}
@@ -212,7 +233,6 @@ public final class Gryphon {
 			ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", cmd);
 			Process process = processBuilder.start();
 			process.waitFor();
-			System.out.println(cmd);
 			InputStream is = process.getInputStream();
 	        byte b[] = new byte[is.available()];
 	        is.read(b, 0, b.length);
@@ -220,8 +240,7 @@ public final class Gryphon {
 	        
 	        return QueryFactory.create(new String(b)); 
 		} catch (Exception e) {
-			e.printStackTrace();
-			Util.logError(e.getMessage());
+			GryphonUtil.logError(e.getMessage());
 			return null;
 		}
 	}
