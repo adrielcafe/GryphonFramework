@@ -1,4 +1,4 @@
-![](http://github.com/adrielcafe/GryphonFramework/raw/master/gryphon.png)
+![](https://github.com/adrielcafe/GryphonFramework/raw/master/gryphon.png)
 
 Gryphon is a Framework for integrating ontologies and relational databases
 
