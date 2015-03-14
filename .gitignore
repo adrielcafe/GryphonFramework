@@ -1,7 +1,6 @@
 ### Custom ###
 alignments/
 .log
-error.log*
 result.rdf
 
 ### Eclipse ###
@@ -43,7 +42,6 @@ local.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
@@ -91,4 +89,4 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-libs/aml/store/error.log
+libs/aml/store/error.log*
