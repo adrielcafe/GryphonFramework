@@ -26,9 +26,7 @@ public abstract class Database {
 		this.dbName = dbName;
 	}
 
-	public boolean testConnection() {
-		return false;
-	}
+	public abstract boolean testConnection();
 
 	public String getHost() {
 		return host;
