@@ -77,9 +77,7 @@ You'll find ontologies and databases used on examples in [examples folder](http:
 
 ## Acknowledgements
 [![CIn-UFPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/cin.png)](http://www2.cin.ufpe.br)
-
 [![UFPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/ufpe.png)](http://www.ufpe.br)
-
 [![FACEPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/facepe.png)](http://www.facepe.br)
 
 ## License
