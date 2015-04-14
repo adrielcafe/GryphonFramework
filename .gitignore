@@ -1,7 +1,8 @@
 ### Custom ###
-alignments/
+examples/alignments/
+mscExperiment/
 .log
-result.rdf
+result.*
 
 ### Eclipse ###
 *.pydevproject

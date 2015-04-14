@@ -40,7 +40,7 @@ import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public final class Gryphon {
-	public static final String VERSION = "1.0a";
+	public static final String VERSION = "1.0";
 	private static final OWLOntologyManager owlManager = OWLManager.createOWLOntologyManager();
 	private static Ontology globalOntology = null;
 	private static Map<String, Ontology> localOntologies = null;
@@ -53,8 +53,9 @@ public final class Gryphon {
 				 + "\n          \\`----.    ) ^_`)    GRYPHON v" + VERSION
 				 + "\n   ,__     \\__   `\\_/  ( `     A Framework for Semantic Integration"
 				 + "\n    \\_\\      \\__  `|   }"
-				 + "\n      \\\\  .--' \\__/    }       By Adriel Café, Filipe Santana, Fred Freitas"
+				 + "\n       \\  .--' \\__/    }       By Adriel CafÃ©, Filipe Santana, Fred Freitas"
 				 + "\n       ))/   \\__,<  /_/               {aac3, fss3, fred}@cin.ufpe.br"
+				 + "\n       ((|  _/_/ `\\ \\_\\_"
 				 + "\n        `\\_____\\\\  )__\\_\\"
 				 + "\n"
 			);
@@ -141,11 +142,15 @@ public final class Gryphon {
 				}
 			}
 
-			owlModel.write(fileWriter, "RDF/XML-ABBREV");
+			owlModel.write(fileWriter, Gryphon.Format.RDFXML.toString());
 			owlModel.close();
 		} catch (IOException e) {
 			GryphonUtil.logError(e.getMessage());
 		}
+	}
+	
+	public static Query createQuery(String strQuery){
+		return QueryFactory.create(strQuery, Syntax.syntaxARQ);
 	}
 
 	public static OntModel query(Query queryGlobal){
@@ -207,12 +212,12 @@ public final class Gryphon {
 	private static OntModel execSQLQuery(Query query, File mappingFile) {
 		try {
 			OntModel resultModel = ModelFactory.createOntologyModel();
-			File ttlResultFile = File.createTempFile("gryphon-query-result-", ".ttl");
-			File rdfResultFile = File.createTempFile("gryphon-query-result-", ".rdf");
+			File ttlResultFile = File.createTempFile("gryphon-sqlquery-result-", ".ttl");
+			File rdfResultFile = File.createTempFile("gryphon-sqlquery-result-", ".rdf");
 			File batFile = new File("libs\\d2rq\\d2r-query" + (GryphonUtil.isWindows() ? ".bat" : ""));
 			Process process = Runtime.getRuntime().exec(String.format("\"%s\" -f ttl \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), mappingFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ), ttlResultFile.getAbsoluteFile()));
 			process.waitFor();
-			
+
 			OWLOntology ttlOntology = owlManager.loadOntologyFromOntologyDocument(ttlResultFile);
 			RDFXMLDocumentFormat rdfXmlFormat = new RDFXMLDocumentFormat();
 			owlManager.saveOntology(ttlOntology, rdfXmlFormat, IRI.create(rdfResultFile));
@@ -237,7 +242,6 @@ public final class Gryphon {
 	        byte b[] = new byte[is.available()];
 	        is.read(b, 0, b.length);
 	        is.close();
-	        
 	        return QueryFactory.create(new String(b)); 
 		} catch (Exception e) {
 			GryphonUtil.logError(e.getMessage());
@@ -275,5 +279,22 @@ public final class Gryphon {
 	
 	public static void removeLocalDatabase(String name){
 		localDatabases.remove(name);
+	}
+	
+	public enum Format {
+		RDFXML("RDF/XML-ABBREV"),
+		JSON_LD("JSON-LD"),
+		TTL("TTL");
+		
+		private String name;
+		 
+	    private Format(String s) {
+	        name = s;
+	    } 
+	    
+	    @Override
+	    public String toString() {
+	    	return name;
+	    }
 	}
 }

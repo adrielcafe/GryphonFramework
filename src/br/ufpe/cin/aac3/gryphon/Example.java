@@ -14,39 +14,42 @@ import br.ufpe.cin.aac3.gryphon.model.impl.OWLOntology;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
 
 public class Example {
 	private static final URI currentURI = new File("").toURI();
-	
-	public static void main(String[] args) {
+
+	static {
 		// Required
 		PropertyConfigurator.configure("log4j.properties");
-		
+	}
+	
+	public static void main(String[] args) {
 		// 1. Configure
-		GryphonConfig.setWorkingDirectory(Paths.get("alignments"));
+		GryphonConfig.setWorkingDirectory(Paths.get("examples/alignments"));
 		GryphonConfig.setLogEnabled(true); 
 		
-		// 2. Set the sources
 		loadExample1();
 		// or
 		//loadExample2();
 		
-		// 3. Align the sources
+		// 2. Align (and Map) the Sources
 		Gryphon.align();
 
-		// 4. Query using SPARQL
+		// 3. Query Using SPARQL
 		String strQuery = 
 				 "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-				+"PREFIX vocab: <http://localhost:2020/vocab/> "
 				+"SELECT ?x ?y "
 				+"WHERE { ?x rdf:type ?y }";
-		Query query = QueryFactory.create(strQuery);
+		Query query = Gryphon.createQuery(strQuery);
 		OntModel result = Gryphon.query(query);
-		GryphonUtil.saveModel(result, new File("result.rdf"));
+		
+		// 4. Save Result
+		GryphonUtil.saveModel(result, Gryphon.Format.RDFXML, new File("result.rdf"));
+		GryphonUtil.saveModel(result, Gryphon.Format.JSON_LD, new File("result.json"));
+		GryphonUtil.saveModel(result, Gryphon.Format.TTL, new File("result.ttl"));
 	} 
 	
+	// 2 Ontologies, 1 Database
 	private static void loadExample1() {
 		try {
 			Ontology globalOntBibtex = new OWLOntology(new URI(currentURI + "examples/ex1/global_bibtex.owl"));
@@ -58,9 +61,12 @@ public class Example {
 			Gryphon.addLocalOntology("bibtex", localOnt1);
 			Gryphon.addLocalOntology("publication", localOnt2);
 			Gryphon.addLocalDatabase("bibsql", localDB1);
-		} catch(URISyntaxException e){ }
+		} catch(URISyntaxException e){
+			e.printStackTrace();
+		}
 	}
 	
+	// 3 Ontologies
 	private static void loadExample2() {
 		try {
 			Ontology global = new OWLOntology(new URI(currentURI + "examples/ex2/human.owl"));
@@ -72,6 +78,8 @@ public class Example {
 			Gryphon.addLocalOntology("fly", localOnt1);
 			Gryphon.addLocalOntology("mouse", localOnt2);
 			Gryphon.addLocalOntology("zebrafish", localOnt3);
-		} catch(URISyntaxException e){ e.printStackTrace(); }
+		} catch(URISyntaxException e){ 
+			e.printStackTrace(); 
+		}
 	}
 }
