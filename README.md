@@ -43,9 +43,9 @@ Gryphon.align();
 ```java
 // Query must be based on *Global Ontology*
 String strQuery = 
-	+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-	+ "SELECT ... "
-	+ "WHERE { ... } "; 
+	  "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+	+ "SELECT ?x ?y "
+	+ "WHERE { ?x rdf:type ?y } "; 
 Query query = Gryphon.createQuery(strQuery);
 OntModel result = Gryphon.query(query);
 ```
@@ -79,6 +79,13 @@ You'll find ontologies and databases used on examples in [examples folder](http:
 [![CIn-UFPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/cin.png)](http://www2.cin.ufpe.br)
 [![UFPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/ufpe.png)](http://www.ufpe.br)
 [![FACEPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/facepe.png)](http://www.facepe.br)
+
+Special thanks to:
+* [Jena](http://jena.apache.org)
+* [OWL API](http://owlapi.sourceforge.net)
+* [AgreementMakerLight](http://somer.fc.ul.pt/aml.php)
+* [D2RQ](http://d2rq.org)
+* [Mediation](http://github.com/correndo/mediation)
 
 ## License
 ```
