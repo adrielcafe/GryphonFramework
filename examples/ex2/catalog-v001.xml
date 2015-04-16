@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1429108600556" name="http://human.owl" uri="human.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1429108600556" name="http://mouse.owl" uri="mouse.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1429108600556" name="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/anatomy/gross_anatomy/animal_gross_anatomy/fish/zebrafish_anatomy.obo" uri="zebrafish.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1429108600556" name="http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/anatomy/gross_anatomy/animal_gross_anatomy/fly/fly_anatomy.obo" uri="fly.owl"/>
+    </group>
+</catalog>

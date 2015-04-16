@@ -1,5 +1,5 @@
 ### Custom ###
-examples/alignments/
+integrationExample/
 mscExperiment/
 .log
 result.*

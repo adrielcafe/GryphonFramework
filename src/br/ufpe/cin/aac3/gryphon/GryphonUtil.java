@@ -1,18 +1,12 @@
 package br.ufpe.cin.aac3.gryphon;
 
 import java.io.File;
-import java.io.FileOutputStream;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 public class GryphonUtil {
-	public static void saveModel(OntModel model, Gryphon.Format format, File file){
-		try {
-			FileOutputStream fos = new FileOutputStream(file);
-			model.write(fos, format.toString());
-		} catch (Exception e) { 
-			logError(e.getMessage());
-		}
+	private static final String currentURI = new File("").toURI().toString();
+	
+	public static String getCurrentURI(){
+		return currentURI.toString();
 	}
 	
 	public static void logInfo(String info){
