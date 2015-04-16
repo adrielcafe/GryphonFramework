@@ -2,7 +2,7 @@ package br.ufpe.cin.aac3.gryphon;
 
 import java.io.File;
 
-public class GryphonUtil {
+public final class GryphonUtil {
 	private static final String currentURI = new File("").toURI().toString();
 	
 	public static String getCurrentURI(){

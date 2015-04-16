@@ -10,14 +10,16 @@ import br.ufpe.cin.aac3.gryphon.GryphonUtil;
 public class Ontology {
 	protected File alignFile = null;
 	protected File resultFile = null;
+	
 	protected String name = null;
 	protected URI uri = null;
 	
 	public Ontology(String name, URI uri) {
+		alignFile = new File(Gryphon.getAlignFolder().getAbsolutePath(), "ont_" + name + ".rdf");
+		resultFile = new File(Gryphon.getResultFolder().getAbsolutePath(), "ont_" + name + ".json");
+		
 		this.name = name;
 		this.uri = uri;
-		this.alignFile = new File(Gryphon.getAlignFolder().getAbsolutePath(), "ont_" + name + ".rdf");
-		this.resultFile = new File(Gryphon.getResultFolder().getAbsolutePath(), "ont_" + name + ".json");
 		
 		GryphonUtil.logInfo("Loading ontology: " + uri.toString());
 		if(!new File(uri).exists()){

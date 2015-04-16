@@ -61,7 +61,7 @@ Supported formats:
 * TODO
 
 ## Practical Example
-Check out [Example.java](http://github.com/adrielcafe/GryphonFramework/blob/master/src/br/ufpe/cin/aac3/gryphon/Example.java) for a complete example.
+Check out [Example.java](http://github.com/adrielcafe/GryphonFramework/blob/master/src/br/ufpe/cin/aac3/gryphon/example/Example.java) for a complete example.
 
 You'll find ontologies and databases used on examples in [examples folder](http://github.com/adrielcafe/GryphonFramework/tree/master/examples).
 
@@ -73,7 +73,8 @@ You'll find ontologies and databases used on examples in [examples folder](http:
 ## Acknowledgements
 [![CIn-UFPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/cin.png)](http://www2.cin.ufpe.br)
 [![UFPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/ufpe.png)](http://www.ufpe.br)
-[![FACEPE](https://github.com/adrielcafe/GryphonFramework/raw/master/images/facepe.png)](http://www.facepe.br)
+
+This project was founded by [FACEPE](http://www.facepe.br) (IBPG-0342-1.03/13).
 
 Special thanks to:
 * [Jena](http://jena.apache.org)

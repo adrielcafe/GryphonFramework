@@ -1,20 +1,16 @@
-package br.ufpe.cin.aac3.gryphon;
+package br.ufpe.cin.aac3.gryphon.example;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.log4j.PropertyConfigurator;
-
+import br.ufpe.cin.aac3.gryphon.Gryphon;
+import br.ufpe.cin.aac3.gryphon.GryphonConfig;
+import br.ufpe.cin.aac3.gryphon.GryphonUtil;
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
 public class Example {
-	static {
-		// Required
-		PropertyConfigurator.configure("log4j.properties");
-	}
-	
 	public static void main(String[] args) {
 		// 1. Configure
 		GryphonConfig.setWorkingDirectory(new File("integrationExample"));

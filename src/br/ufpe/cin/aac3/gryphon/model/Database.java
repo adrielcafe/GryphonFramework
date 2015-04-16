@@ -18,6 +18,7 @@ public class Database {
 	protected File mapFile = null;
 	protected File alignFile = null;
 	protected File resultFile = null;
+	
 	protected String jdbcDriverClass = null;
 	protected String jdbcURL = null;
 	protected String host = null;
@@ -27,9 +28,10 @@ public class Database {
 	protected int port = 0;
 	
 	public Database(String host, int port, String username, String password, String dbName, DBMS dbms) {
-		this.mapFile = new File(Gryphon.getMapFolder().getAbsolutePath(), "db_" + dbName + ".ttl");
-		this.alignFile = new File(Gryphon.getAlignFolder().getAbsolutePath(), "db_" + dbName + ".rdf");
-		this.resultFile = new File(Gryphon.getResultFolder().getAbsolutePath(), "db_" + dbName + ".json");
+		mapFile = new File(Gryphon.getMapFolder().getAbsolutePath(), "db_" + host + "_" + port + "_" + dbName + ".ttl");
+		alignFile = new File(Gryphon.getAlignFolder().getAbsolutePath(), "db_" + host + "_" + port + "_" + dbName  + ".rdf");
+		resultFile = new File(Gryphon.getResultFolder().getAbsolutePath(), "db_" + host + "_" + port + "_" + dbName  + ".json");
+		
 		this.host = host;
 		this.port = port;
 		this.username = username;

@@ -3,7 +3,6 @@ package br.ufpe.cin.aac3.gryphon;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
@@ -13,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.PropertyConfigurator;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
@@ -42,17 +42,20 @@ import com.hp.hpl.jena.util.FileManager;
 public final class Gryphon {
 	public static final String VERSION = "1.0";
 	private static final String REPOSITORY_ID = "gryphon-repo";
+
+	private static File alignFolder;
+	private static File mapFolder;
+	private static File resultFolder;
 	
 	private static Ontology globalOntology;
 	private static List<Ontology> localOntologies;
 	private static List<Database> localDatabases;
-	private static File alignFolder;
-	private static File mapFolder;
-	private static File resultFolder;
 
 	private Gryphon() { }
 
 	public static void init(){
+		PropertyConfigurator.configure("log4j.properties");
+		
 		if(GryphonConfig.showGryphonLogoOnConsole() && GryphonConfig.isLogEnabled()){
 			System.out.println(
 				   "\n          _          (`-. "
@@ -83,7 +86,7 @@ public final class Gryphon {
 		if(!localOntologies.isEmpty()){
 			GryphonUtil.logInfo("Aligning ontologies...");
 			for (Ontology ontology : localOntologies) {
-				Gryphon.alignOntology(ontology.getURI(), ontology.getAlignFile());
+				alignOntology(ontology.getURI(), ontology.getAlignFile());
 				GryphonUtil.logInfo(String.format("> Ontology %s was aligned", ontology.getName()));
 			}
 		}
@@ -91,8 +94,8 @@ public final class Gryphon {
 		if(!localDatabases.isEmpty()){
 			GryphonUtil.logInfo("Mapping and aligning databases...");
 			for (Database database : localDatabases) {
-				Gryphon.mapDatabase(database);
-				Gryphon.alignOntology(database.getAlignFile().toURI(), database.getAlignFile());
+				mapDatabase(database);
+				alignOntology(database.getAlignFile().toURI(), database.getAlignFile());
 				GryphonUtil.logInfo(String.format("> Database %s was mapped and aligned", database.getDbName()));
 			}
 		}
@@ -118,11 +121,7 @@ public final class Gryphon {
 			Process process = Runtime.getRuntime().exec(String.format("%s \"%s\" -o \"%s\" -u \"%s\" -p \"%s\" \"%s\"", (GryphonUtil.isWindows() ? "" : "bash"), scriptFile.getAbsolutePath(), db.getMapFile().getAbsolutePath(), db.getUsername(), db.getPassword(), db.getJdbcURL()));
 			process.waitFor();
 			mapping = FileUtils.readFileToString(db.getMapFile(), "utf-8");
-		} catch (Exception e) {
-			GryphonUtil.logError(e.getMessage());
-		}
-		
-		try {
+			
 			Files.write(Paths.get(db.getMapFile().toURI()), mapping.getBytes());
 			String d2rqNS = "http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#";
 			String rdfNS = "http://localhost:2020/vocab/";
@@ -154,7 +153,7 @@ public final class Gryphon {
 
 			owlModel.write(fileWriter, "RDF/XML-ABBREV");
 			owlModel.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			GryphonUtil.logError(e.getMessage());
 		}
 	}
