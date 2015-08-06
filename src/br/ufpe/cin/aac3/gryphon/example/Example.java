@@ -5,33 +5,35 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import br.ufpe.cin.aac3.gryphon.Gryphon;
+import br.ufpe.cin.aac3.gryphon.Gryphon.ResultFormat;
 import br.ufpe.cin.aac3.gryphon.GryphonConfig;
 import br.ufpe.cin.aac3.gryphon.GryphonUtil;
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
-public class Example {
+public final class Example {
 	public static void main(String[] args) {
 		// 1. Configure
 		GryphonConfig.setWorkingDirectory(new File("integrationExample"));
 		GryphonConfig.setLogEnabled(true);
-		GryphonConfig.setShowGryphonLogoOnConsole(true);
+		GryphonConfig.setShowLogo(false);
 		Gryphon.init();
 		
+		// 2. Set the global ontology and local sources
 		loadExample1();
 		// or
 		//loadExample2();
 		
-		// 2. Align (and Map) the Sources
-		Gryphon.align();
+		// 3. Aligns ontologies and maps databases
+		Gryphon.alignAndMap();
 
-		// 3. Query Using SPARQL
-		String strQuery = 
-				 "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+"SELECT ?x ?y "
-				+"WHERE { ?x rdf:type ?y }";
-		Gryphon.query(strQuery);
-		
+		// 4. Query Using SPARQL
+		String strQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+				+ "SELECT DISTINCT ?x ?y "
+				+ "WHERE { ?x a ?y } "
+				+ "LIMIT 100";
+		Gryphon.query(strQuery, ResultFormat.JSON);
+	
 		
 		System.exit(0);
 	} 
