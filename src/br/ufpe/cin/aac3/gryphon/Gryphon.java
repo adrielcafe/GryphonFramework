@@ -27,10 +27,6 @@ import org.openrdf.sail.memory.config.MemoryStoreConfig;
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.Syntax;
-
 public final class Gryphon {
 	public static final String VERSION = "1.0";
 	private static final String REPOSITORY_ID = "gryphon-repo";
@@ -296,9 +292,8 @@ public final class Gryphon {
 				strResultFormat = "json";
 		}
 		try {
-			Query query = QueryFactory.create(strQuery);
 			File batFile = new File("libs\\d2rq\\d2r-query" + (GryphonUtil.isWindows() ? ".bat" : ""));
-			String cmd = String.format("\"%s\" -f %s -t 9999 \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), strResultFormat, mapFile.getAbsolutePath(), query.toString(Syntax.syntaxARQ).replaceAll("\n", " "), resultFile.getAbsoluteFile()); 
+			String cmd = String.format("\"%s\" -f %s -t 9999 \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), strResultFormat, mapFile.getAbsolutePath(), strQuery.replaceAll("\n", " "), resultFile.getAbsoluteFile()); 
 			Process process = Runtime.getRuntime().exec(cmd);
 			process.waitFor();
 		} catch (Exception e) {

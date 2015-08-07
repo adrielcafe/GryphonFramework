@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="libs/cglib-3.1.jar"/>
 	<classpathentry kind="lib" path="libs/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="libs/commons-codec-1.10.jar"/>
-	<classpathentry kind="lib" path="libs/commons-csv-1.0.jar"/>
 	<classpathentry kind="lib" path="libs/commons-dbcp-1.4.jar"/>
 	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang3-3.3.2.jar"/>
@@ -20,13 +19,8 @@
 	<classpathentry kind="lib" path="libs/jackson-databind-2.4.4.jar"/>
 	<classpathentry kind="lib" path="libs/jakarta-regexp-1.4.jar"/>
 	<classpathentry kind="lib" path="libs/jcl-over-slf4j-1.7.10.jar"/>
-	<classpathentry kind="lib" path="libs/jena-arq-2.13.0.jar"/>
-	<classpathentry kind="lib" path="libs/jena-core-2.13.0.jar"/>
-	<classpathentry kind="lib" path="libs/jena-iri-1.1.2.jar"/>
-	<classpathentry kind="lib" path="libs/jena-tdb-1.1.2.jar"/>
 	<classpathentry kind="lib" path="libs/jsonld-java-0.5.1.jar"/>
 	<classpathentry kind="lib" path="libs/jstl-1.1.2.jar"/>
-	<classpathentry kind="lib" path="libs/libthrift-0.9.2.jar"/>
 	<classpathentry kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.35-bin.jar"/>
 	<classpathentry kind="lib" path="libs/opencsv-3.2.jar"/>
@@ -83,7 +77,5 @@
 	<classpathentry kind="lib" path="libs/slf4j-api-1.7.10.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-log4j12-1.7.10.jar"/>
 	<classpathentry kind="lib" path="libs/standard-1.1.2.jar"/>
-	<classpathentry kind="lib" path="libs/xercesImpl-2.11.0.jar"/>
-	<classpathentry kind="lib" path="libs/xml-apis-1.4.01.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
