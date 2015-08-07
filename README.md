@@ -9,7 +9,7 @@ Gryphon is a lightweight framework for integrating **ontologies** and **relation
 ### 1. Configure
 ```java
 // Where the alignments and mappings will be saved? Want to see logs?
-GryphonConfig.setWorkingDirectory(new File("integrationExample"));
+GryphonConfig.setWorkingDirectory(new File("myIntegration"));
 GryphonConfig.setLogEnabled(true);
 GryphonConfig.setShowLogo(false);
 
@@ -20,13 +20,13 @@ Gryphon.init();
 ### 2. Set the global ontology and local sources
 ```java
 // Where are the sources?
-Ontology globalOntBibtex = new Ontology("globalOntology", uriToGlobalOntology);
+Ontology globalOnt = new Ontology("globalOntology", uriToGlobalOntology);
 Ontology localOnt1 = new Ontology("localOntology1", uriToLocalOntology1);
 Ontology localOnt2 = new Ontology("localOntology2", uriToLocalOntology2);
 Database localDB1 = new Database("localhost", 3306, "username", "password", "db1", Database.DBMS.MySQL);
-Database localDB1 = new Database("localhost", 3306, "username", "password", "db2", Database.DBMS.PostgreSQL);
+Database localDB2 = new Database("localhost", 3306, "username", "password", "db2", Database.DBMS.PostgreSQL);
 
-Gryphon.setGlobalOntology(globalOntBibtex);
+Gryphon.setGlobalOntology(globalOnt);
 Gryphon.addLocalOntology(localOnt1);
 Gryphon.addLocalOntology(localOnt2);
 Gryphon.addLocalDatabase(localDB1);
