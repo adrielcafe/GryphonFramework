@@ -73,7 +73,6 @@ You'll find ontologies and databases used on examples in [examples folder](http:
 This project was founded by [FACEPE](http://www.facepe.br) (IBPG-0342-1.03/13).
 
 Special thanks to:
-* [Jena](http://jena.apache.org)
 * [Sesame](http://rdf4j.org)
 * [AgreementMakerLight](http://somer.fc.ul.pt/aml.php)
 * [D2RQ](http://d2rq.org)
