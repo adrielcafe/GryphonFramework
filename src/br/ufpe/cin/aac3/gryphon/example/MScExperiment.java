@@ -16,7 +16,7 @@ public final class MScExperiment {
 		// 1. Configure
 		GryphonConfig.setWorkingDirectory(new File("integrationMScExperiment"));
 		GryphonConfig.setLogEnabled(true);
-		GryphonConfig.setShowLogo(true);
+		GryphonConfig.setShowLogo(false);
 		Gryphon.init();
 
 		try {
@@ -33,7 +33,7 @@ public final class MScExperiment {
 			// 4. Query Using SPARQL
 			long startTime = System.currentTimeMillis();
 			
-			String query = getQuery1();
+			String query = getQuery4();
 			Gryphon.query(query, ResultFormat.JSON);
 			
 			long endTime = System.currentTimeMillis();
@@ -48,22 +48,14 @@ public final class MScExperiment {
 	private static String getTestQuery(){
 		return ""
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "
-				+ "PREFIX pr: <http://purl.obolibrary.org/obo/pr#> "
-				+ "PREFIX go: <http://purl.obolibrary.org/obo/go.owl#> "
 				+ "PREFIX btl2: <http://purl.org/biotop/btl2.owl#> "
-				+ "PREFIX integrativo: <http://www.cin.ufpe.br/~integrativo#> "
-				+ "PREFIX vocab: <http://localhost:2020/vocab/> "
-				+ "SELECT DISTINCT ?organism ?homocysteine "
+				+ "SELECT DISTINCT ?organism "
 				+ "WHERE { "
-					+ "?org a btl2:organism ;"
+					+ "?organismId a btl2:organism ;"
 					+ "rdfs:label ?organism ."
-					+ "?hom a btl2:MonoMolecularEntity ;"
-					+ "rdfs:label ?homocysteine ."
-					+ "?org btl2:includes ?hom ."
-					+ "FILTER(?homocysteine = \"homocysteine\") ."
-				+ "}";
+					+ "?homocysteineId a btl2:MonoMolecularEntity ."
+					+ "?organismId btl2:includes ?homocysteineId ."
+				+ "} LIMIT 10";
 	}
 	
 	// Q1: SELECT ALL ORGANISMS THAT INCLUDES HOMOCYSTEINE
@@ -74,12 +66,11 @@ public final class MScExperiment {
 			+ "PREFIX btl2: <http://purl.org/biotop/btl2.owl#> "
 			+ "SELECT DISTINCT ?organism "
 			+ "WHERE { "
-				+ "?org a btl2:organism ;"
+				+ "?organismId a btl2:organism ;"
 				+ "rdfs:label ?organism ."
-				+ "?hom a btl2:MonoMolecularEntity ;"
-				+ "rdfs:label ?homocysteine ."
-				+ "?org btl2:includes ?hom ."
-			+ "} LIMIT 10";
+				+ "?homocysteineId a btl2:MonoMolecularEntity ."
+				+ "?organismId btl2:includes ?homocysteineId ."
+			+ "}";
 	}
 	
 	// Q2: SELECT ALL BIOLOGICAL PROCESS THAT IS INCLUDED IN ORGANISMS
@@ -91,12 +82,11 @@ public final class MScExperiment {
 			+ "PREFIX btl2: <http://purl.org/biotop/btl2.owl#> "
 			+ "SELECT DISTINCT ?biologicalProcess "
 			+ "WHERE { "
-				+ "?bio a go:biological_process ;"
+				+ "?biologicalProcessId a go:biological_process ;"
 				+ "rdfs:label ?biologicalProcess ."
-				+ "?org a btl2:organism ;"
-				+ "rdfs:label ?organism ."
-				+ "?bio btl2:isIncludedIn ?org ."
-			+ "} LIMIT 10";
+				+ "?organismId a btl2:organism ."
+				+ "?biologicalProcessId btl2:isIncludedIn ?organismId ."
+			+ "}";
 	}
 	
 	// Q3: SELECT ALL BIOLOGICAL_PROCESS AND THE LOCATION THEY HAPPEN (CELLULAR COMPONENT)
@@ -108,12 +98,12 @@ public final class MScExperiment {
 			+ "PREFIX btl2: <http://purl.org/biotop/btl2.owl#> "
 			+ "SELECT DISTINCT ?biologicalProcess ?cellularComponent "
 			+ "WHERE { "
-				+ "?bio a go:biological_process ;"
+				+ "?biologicalProcessId a go:biological_process ;"
 				+ "rdfs:label ?biologicalProcess ."
-				+ "?cel a go:cellular_component ;"
+				+ "?cellularComponentId a go:cellular_component ;"
 				+ "rdfs:label ?cellularComponent ."
-				+ "?bio btl2:isIncludedIn ?cel ."
-			+ "} LIMIT 10";
+				+ "?biologicalProcessId btl2:isIncludedIn ?cellularComponentId ."
+			+ "}";
 	}
 	
 	// SELECT BIOLOGICAL PROCESSES PROMOTED BY PROTEINS
@@ -126,11 +116,11 @@ public final class MScExperiment {
 			+ "PREFIX btl2: <http://purl.org/biotop/btl2.owl#> "
 			+ "SELECT DISTINCT ?biologicalProcess ?proteinName "
 			+ "WHERE { "
-				+ "?bio a go:biological_process ;"
+				+ "?biologicalProcessId a go:biological_process ;"
 				+ "rdfs:label ?biologicalProcess ."
-				+ "?pro a pr:PR_000000001 ;"
+				+ "?proteinNameId a pr:PR_000000001 ;"
 				+ "rdfs:label ?proteinName ."
-				+ "?bio btl2:hasAgent ?pro ."
-			+ "} LIMIT 10";
+				+ "?biologicalProcessId btl2:hasAgent ?proteinNameId ."
+			+ "}";
 	}
 }
