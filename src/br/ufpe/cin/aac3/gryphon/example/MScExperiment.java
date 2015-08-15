@@ -58,8 +58,7 @@ public final class MScExperiment {
 				+ "} LIMIT 10";
 	}
 	
-	// Q1: SELECT ALL ORGANISMS THAT INCLUDES HOMOCYSTEINE
-	// ORGANISM btl2:includes HOMOCYSTEINE
+	// Q1: Retrieve organisms that include homocysteine
 	private static String getQuery1(){
 		return ""
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
@@ -73,8 +72,7 @@ public final class MScExperiment {
 			+ "}";
 	}
 	
-	// Q2: SELECT ALL BIOLOGICAL PROCESS THAT IS INCLUDED IN ORGANISMS
-	// BIOLOGICAL_PROCESS btl2:isIncludedIn ORGANISM
+	// Q2: Retrieve biological processes that is included in organisms
 	private static String getQuery2(){
 		return ""
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
@@ -89,8 +87,7 @@ public final class MScExperiment {
 			+ "}";
 	}
 	
-	// Q3: SELECT ALL BIOLOGICAL_PROCESS AND THE LOCATION THEY HAPPEN (CELLULAR COMPONENT)
-	// BIOLOGICAL PROCESS btl2:isIncludedIn CELLULAR_COMPONENT
+	// Q3: Retrieve biological processes and the cellular components where they can be located
 	private static String getQuery3(){
 		return ""
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
@@ -106,8 +103,7 @@ public final class MScExperiment {
 			+ "}";
 	}
 	
-	// SELECT BIOLOGICAL PROCESSES PROMOTED BY PROTEINS
-	// BIOLOGICAL PROCESS btl2:hasAgent PROTEIN
+	// Q4: Retrieve biological processes promoted by proteins
 	private static String getQuery4(){
 		return ""
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
