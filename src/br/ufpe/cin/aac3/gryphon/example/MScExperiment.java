@@ -33,7 +33,7 @@ public final class MScExperiment {
 			// 4. Query Using SPARQL
 			long startTime = System.currentTimeMillis();
 			
-			String query = getQuery4();
+			String query = getQuery1();
 			Gryphon.query(query, ResultFormat.JSON);
 			
 			long endTime = System.currentTimeMillis();
@@ -78,11 +78,12 @@ public final class MScExperiment {
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
 			+ "PREFIX go: <http://purl.obolibrary.org/obo/go.owl#> "
 			+ "PREFIX btl2: <http://purl.org/biotop/btl2.owl#> "
-			+ "SELECT DISTINCT ?biologicalProcess "
+			+ "SELECT DISTINCT ?biologicalProcess ?organism "
 			+ "WHERE { "
 				+ "?biologicalProcessId a go:biological_process ;"
 				+ "rdfs:label ?biologicalProcess ."
-				+ "?organismId a btl2:organism ."
+				+ "?organismId a btl2:organism ;"
+				+ "rdfs:label ?organism ."
 				+ "?biologicalProcessId btl2:isIncludedIn ?organismId ."
 			+ "}";
 	}
