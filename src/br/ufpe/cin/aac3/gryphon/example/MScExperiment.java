@@ -16,13 +16,13 @@ public final class MScExperiment {
 		// 1. Configure
 		GryphonConfig.setWorkingDirectory(new File("integrationMScExperiment"));
 		GryphonConfig.setLogEnabled(true);
-		GryphonConfig.setShowLogo(false);
+		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
 
 		try {
 			// 2. Set the global ontology and local sources
 			Ontology globalOnt = new Ontology("integrativo", new URI(GryphonUtil.getCurrentURI() + "mscExperiment/TesteGryphon.owl"), new File("mscExperiment/sources"));
-			Database localDB2 = new Database("localhost", 3306, "root", "", "uniprot", Database.DBMS.MySQL);
+			Database localDB2 = new Database("localhost", 3306, "root", "", "uniprot", Gryphon.DBMS.MySQL);
 			
 			Gryphon.setGlobalOntology(globalOnt);
 			Gryphon.addLocalDatabase(localDB2);

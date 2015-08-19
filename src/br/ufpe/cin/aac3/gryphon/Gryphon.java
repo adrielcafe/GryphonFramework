@@ -42,6 +42,10 @@ public final class Gryphon {
 	public enum ResultFormat {
 		JSON, XML, CSV
 	}
+	
+	public enum DBMS {
+		MySQL, PostgreSQL
+	}
 
 	private Gryphon() { }
 
@@ -207,7 +211,7 @@ public final class Gryphon {
 			for(Ontology ontology : localOntologies){
 				final RepositoryConnection repositoryConnection = repository.getConnection();
 				repositoryConnection.add(new File(ontology.getURI()), ontology.getURI().toString(), RDFFormat.RDFXML);
-				
+
 				strQueryLocal = queryRewrite(strQueryGlobal, ontology.getAlignFile());
 				queryLocal = repositoryConnection.prepareTupleQuery(QueryLanguage.SPARQL, strQueryLocal);
 				if(queryLocal != null){
