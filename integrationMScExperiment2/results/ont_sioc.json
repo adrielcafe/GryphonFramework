@@ -1,0 +1,17 @@
+{
+  "head" : {
+    "vars" : [
+      "title"
+    ]
+  },
+  "results" : {
+    "bindings" : [
+      {
+        "title" : {
+          "type" : "literal",
+          "value" : "New 'Tatooine' Discovery Confirms Circumbinary Planets Aren't Just Science Fiction"
+        }
+      }
+    ]
+  }
+}

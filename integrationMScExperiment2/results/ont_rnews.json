@@ -1,0 +1,17 @@
+{
+  "head" : {
+    "vars" : [
+      "title"
+    ]
+  },
+  "results" : {
+    "bindings" : [
+      {
+        "title" : {
+          "type" : "literal",
+          "value" : "This Jupiter-like gas giant could show us how planets form in the universe"
+        }
+      }
+    ]
+  }
+}

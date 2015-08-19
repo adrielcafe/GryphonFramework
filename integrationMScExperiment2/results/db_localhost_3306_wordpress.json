@@ -1,0 +1,12 @@
+{
+  "head": {
+    "vars": [ "title" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "title": { "type": "literal" , "value": "Young 'alien Jupiter' planet discovered" }
+      }
+    ]
+  }
+}

@@ -39,7 +39,7 @@ public final class MScExperiment2 {
 			// 4. Query Using SPARQL
 			long startTime = System.currentTimeMillis();
 			
-			String query = getQuery1();
+			String query = getQuery5();
 			Gryphon.query(query, ResultFormat.JSON);
 			
 			long endTime = System.currentTimeMillis();
@@ -94,7 +94,7 @@ public final class MScExperiment2 {
 				+ "}";
 	}
 	
-	// Q3: Retrieve news that are not science
+	// Q3: Retrieve news that are not from science
 	private static String getQuery3(){
 		return ""
 				+ "PREFIX news: <http://ebiquity.umbc.edu/ontology/news.owl#> "
@@ -109,7 +109,7 @@ public final class MScExperiment2 {
 				+ "}";
 	}
 	
-	// Q4: Retrieve news starting on 08/17/2015
+	// Q4: Retrieve news starting in 08/17/2015
 	private static String getQuery4(){
 		return ""
 				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "
@@ -121,5 +121,17 @@ public final class MScExperiment2 {
 					+ "news:publishedOn ?date . "
 					+ "FILTER (?date >= '2015-08-17'^^xsd:dateTime) . "
 				+ "} ORDER BY ?date";
+	}
+	
+	// Q5: Retrieve news with 'planet' keyword
+	private static String getQuery5(){
+		return ""
+				+ "PREFIX news: <http://ebiquity.umbc.edu/ontology/news.owl#> "
+				+ "SELECT DISTINCT ?title "
+				+ "WHERE { "
+					+ "?x a news:News ; "
+					+ "news:title ?title . "
+					+ "FILTER (regex(?title, 'planet', 'i')) . "
+				+ "}";
 	}
 }
