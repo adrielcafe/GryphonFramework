@@ -1314,7 +1314,6 @@ The move to Greenford is already under way and is expected to be completed by Ja
     <owl:NamedIndividual rdf:about="&sioc;Post10">
         <rdf:type rdf:resource="&sioc;Post"/>
         <rdfs:label rdf:datatype="&xsd;string">Freaky &apos;Sea Monster&apos; Recovered From Centuries-Old Shipwreck</rdfs:label>
-        <content rdf:datatype="&xsd;string"></content>
         <dcterms:date rdf:datatype="&xsd;dateTime">2015-08-16</dcterms:date>
         <dcterms:title rdf:datatype="&xsd;string">Freaky &apos;Sea Monster&apos; Recovered From Centuries-Old Shipwreck</dcterms:title>
         <dcterms:category rdf:datatype="&xsd;string">Science</dcterms:category>
@@ -1486,7 +1485,6 @@ But even if the change goes through relatively quickly, some inattentive users c
     <owl:NamedIndividual rdf:about="&sioc;Post5">
         <rdf:type rdf:resource="&sioc;Post"/>
         <rdfs:label rdf:datatype="&xsd;string">Software upgrade grounds hundreds of flights over US east coast</rdfs:label>
-        <dcterms:category rdf:datatype="&xsd;string"></dcterms:category>
         <dcterms:date rdf:datatype="&xsd;dateTime">2015-08-15</dcterms:date>
         <content rdf:datatype="&xsd;string">Hundreds of flights across the east coast of the US were delayed or cancelled at the weekend due to a software upgrade, the US Federal Aviation Administration has said.
 

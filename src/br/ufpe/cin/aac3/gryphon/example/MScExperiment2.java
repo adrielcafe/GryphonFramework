@@ -23,11 +23,13 @@ public final class MScExperiment2 {
 			// 2. Set the global ontology and local sources
 			Ontology globalOntNews = new Ontology("news", new URI(GryphonUtil.getCurrentURI() + "mscExperiment2/news.owl"));
 			Ontology localOntSioc = new Ontology("sioc", new URI(GryphonUtil.getCurrentURI() + "mscExperiment2/sioc.owl"));
+			Ontology localOntRnews = new Ontology("rnews", new URI(GryphonUtil.getCurrentURI() + "mscExperiment2/rnews.owl"));
 			Database localDBJoomla = new Database("localhost", 3306, "root", "", "joomla", Gryphon.DBMS.MySQL);
 			Database localDBWordPress = new Database("localhost", 3306, "root", "", "wordpress", Gryphon.DBMS.MySQL);
 			
 			Gryphon.setGlobalOntology(globalOntNews);
 			Gryphon.addLocalOntology(localOntSioc);
+			Gryphon.addLocalOntology(localOntRnews);
 			Gryphon.addLocalDatabase(localDBJoomla);
 			Gryphon.addLocalDatabase(localDBWordPress);
 

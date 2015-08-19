@@ -3,6 +3,7 @@ integrationExample/
 repositories/SYSTEM/
 .log*
 result.*
+catalog-v*.xml
 
 ### Eclipse ###
 *.pydevproject
