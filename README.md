@@ -1,4 +1,6 @@
-![](https://github.com/adrielcafe/GryphonFramework/raw/master/images/gryphon.png)
+<p align="center">
+    <img src="https://github.com/adrielcafe/GryphonFramework/raw/master/images/gryphon.png">
+</p>
 
 Gryphon is a lightweight framework for integrating **ontologies** and **relational databases** in a *very simple* way.
 
