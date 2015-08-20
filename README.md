@@ -2,6 +2,8 @@
 
 Gryphon is a lightweight framework for integrating **ontologies** and **relational databases** in a *very simple* way.
 
+See my [Master's Thesis](https://github.com/adrielcafe/DissertacaoDeMestrado) for details (in *portuguese*)
+
 *Paper coming soon...*
 
 ## How to Use
