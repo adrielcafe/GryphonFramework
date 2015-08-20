@@ -11,21 +11,21 @@ import br.ufpe.cin.aac3.gryphon.GryphonUtil;
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
-public final class MScExperiment {
+public final class MScExperiment1 {
 	public static void main(String[] args) {
 		// 1. Configure
-		GryphonConfig.setWorkingDirectory(new File("integrationMScExperiment"));
+		GryphonConfig.setWorkingDirectory(new File("integrationMScExperiment1"));
 		GryphonConfig.setLogEnabled(true);
 		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
 
 		try {
 			// 2. Set the global ontology and local sources
-			Ontology globalOnt = new Ontology("integrativo", new URI(GryphonUtil.getCurrentURI() + "mscExperiment/TesteGryphon.owl"), new File("mscExperiment/sources"));
-			Database localDB2 = new Database("localhost", 3306, "root", "", "uniprot", Gryphon.DBMS.MySQL);
+			Ontology globalOnt = new Ontology("integrativo", new URI(GryphonUtil.getCurrentURI() + "mscExperiment1/integrativO.owl"), new File("mscExperiment/sources"));
+			Database localDB = new Database("localhost", 3306, "root", "", "uniprot", Gryphon.DBMS.MySQL);
 			
 			Gryphon.setGlobalOntology(globalOnt);
-			Gryphon.addLocalDatabase(localDB2);
+			Gryphon.addLocalDatabase(localDB);
 
 			// 3. Aligns ontologies and maps databases
 			//Gryphon.alignAndMap();

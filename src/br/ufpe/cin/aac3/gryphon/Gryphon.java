@@ -306,7 +306,8 @@ public final class Gryphon {
 		}
 		try {
 			File batFile = new File("libs/d2rq/d2r-query" + (GryphonUtil.isWindows() ? ".bat" : ""));
-			String cmd = String.format("\"%s\" -f %s -t 9999 \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), strResultFormat, mapFile.getAbsolutePath(), strQuery.replaceAll("\n", " "), resultFile.getAbsoluteFile());
+			String cmd = String.format("\"%s\" -f %s -t 9999 --verbose \"%s\" \"%s\" > \"%s\"", batFile.getAbsolutePath(), strResultFormat, mapFile.getAbsolutePath(), strQuery.replaceAll("\n", " "), resultFile.getAbsoluteFile());
+			System.out.println(cmd);
 			Process process;
 			if(GryphonUtil.isWindows()){
 				process = Runtime.getRuntime().exec(cmd);

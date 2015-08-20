@@ -4,7 +4,9 @@
   } ,
   "results": {
     "bindings": [
-      
+      {
+        "title": { "type": "literal" , "value": "An exceptional planetary system discovered in Cassiopeia" }
+      }
     ]
   }
 }

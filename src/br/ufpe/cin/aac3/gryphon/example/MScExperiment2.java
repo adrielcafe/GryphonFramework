@@ -16,7 +16,7 @@ public final class MScExperiment2 {
 		// 1. Configure
 		GryphonConfig.setWorkingDirectory(new File("integrationMScExperiment2"));
 		GryphonConfig.setLogEnabled(true);
-		GryphonConfig.setShowLogo(true);
+		GryphonConfig.setShowLogo(false);
 		Gryphon.init();
 
 		try {
@@ -39,7 +39,7 @@ public final class MScExperiment2 {
 			// 4. Query Using SPARQL
 			long startTime = System.currentTimeMillis();
 			
-			String query = getQuery5();
+			String query = getQuery1();
 			Gryphon.query(query, ResultFormat.JSON);
 			
 			long endTime = System.currentTimeMillis();
@@ -72,13 +72,12 @@ public final class MScExperiment2 {
 	private static String getQuery1(){
 		return ""
 				+ "PREFIX news: <http://ebiquity.umbc.edu/ontology/news.owl#> "
-				+ "SELECT DISTINCT ?title ?date ?category ?content "
+				+ "SELECT DISTINCT ?title ?date ?category "
 				+ "WHERE { "
 					+ "?x a news:News ; "
 					+ "news:title ?title ; "
 					+ "news:publishedOn ?date ; "
-					+ "news:category ?category ; "
-					+ "news:description ?content . "
+					+ "news:category ?category . "
 				+ "}";
 	}
 	
@@ -104,7 +103,7 @@ public final class MScExperiment2 {
 					+ "news:title ?title ; "
 					+ "news:category ?category . "
 					+ "FILTER NOT EXISTS { "
-						+ "FILTER (?category = 'Tech') . "
+						+ "FILTER (?category = 'Science') . "
 					+ " } . "
 				+ "}";
 	}
