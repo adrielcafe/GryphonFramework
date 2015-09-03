@@ -39,7 +39,7 @@ public final class MScExperiment2 {
 			// 4. Query Using SPARQL
 			long startTime = System.currentTimeMillis();
 			
-			String query = getQuery1();
+			String query = getQuery5();
 			Gryphon.query(query, ResultFormat.JSON);
 			
 			long endTime = System.currentTimeMillis();
