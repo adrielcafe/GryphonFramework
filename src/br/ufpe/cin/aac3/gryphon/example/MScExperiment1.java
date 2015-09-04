@@ -41,22 +41,10 @@ public final class MScExperiment1 {
 		} catch(URISyntaxException e){
 			e.printStackTrace();
 		}
-		
+
+		GryphonUtil.logInfo("Finished!");
 		System.exit(0);
 	} 
-
-	private static String getTestQuery(){
-		return ""
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-				+ "PREFIX btl2: <http://purl.org/biotop/btl2.owl#> "
-				+ "SELECT DISTINCT ?organism "
-				+ "WHERE { "
-					+ "?organismId a btl2:organism ;"
-					+ "rdfs:label ?organism ."
-					+ "?homocysteineId a btl2:MonoMolecularEntity ."
-					+ "?organismId btl2:includes ?homocysteineId ."
-				+ "} LIMIT 10";
-	}
 	
 	// Q1: Retrieve organisms that include homocysteine
 	private static String getQuery1(){

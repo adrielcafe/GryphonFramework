@@ -16,16 +16,21 @@ public final class MScExperiment2 {
 		// 1. Configure
 		GryphonConfig.setWorkingDirectory(new File("integrationMScExperiment2"));
 		GryphonConfig.setLogEnabled(true);
-		GryphonConfig.setShowLogo(false);
+		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
 
 		try {
 			// 2. Set the global ontology and local sources
-			Ontology globalOntNews = new Ontology("news", new URI(GryphonUtil.getCurrentURI() + "mscExperiment2/news.owl"));
-			Ontology localOntSioc = new Ontology("sioc", new URI(GryphonUtil.getCurrentURI() + "mscExperiment2/sioc.owl"));
-			Ontology localOntRnews = new Ontology("rnews", new URI(GryphonUtil.getCurrentURI() + "mscExperiment2/rnews.owl"));
-			Database localDBJoomla = new Database("localhost", 3306, "root", "", "joomla", Gryphon.DBMS.MySQL);
-			Database localDBWordPress = new Database("localhost", 3306, "root", "", "wordpress", Gryphon.DBMS.MySQL);
+			Ontology globalOntNews = new Ontology("news", new URI(
+					GryphonUtil.getCurrentURI() + "mscExperiment2/news.owl"));
+			Ontology localOntSioc = new Ontology("sioc", new URI(
+					GryphonUtil.getCurrentURI() + "mscExperiment2/sioc.owl"));
+			Ontology localOntRnews = new Ontology("rnews", new URI(
+					GryphonUtil.getCurrentURI() + "mscExperiment2/rnews.owl"));
+			Database localDBJoomla = new Database("localhost", 3306, "root", "", 
+					"joomla", Gryphon.DBMS.MySQL);
+			Database localDBWordPress = new Database("localhost", 3306, "root", "", 
+					"wordpress", Gryphon.DBMS.MySQL);
 			
 			Gryphon.setGlobalOntology(globalOntNews);
 			Gryphon.addLocalOntology(localOntSioc);
@@ -37,35 +42,14 @@ public final class MScExperiment2 {
 			//Gryphon.alignAndMap();
 
 			// 4. Query Using SPARQL
-			long startTime = System.currentTimeMillis();
-			
-			String query = getQuery5();
+			String query = getQuery3();
 			Gryphon.query(query, ResultFormat.JSON);
-			
-			long endTime = System.currentTimeMillis();
-			System.out.println("Query Duration: " + ((endTime - startTime) / 1000 % 60) + "s");
 		} catch(URISyntaxException e){
 			e.printStackTrace();
 		}
 		
+		GryphonUtil.logInfo("Finished!");
 		System.exit(0);
-	} 
-
-	private static String getTestQuery(){
-		return ""
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "
-				+ "PREFIX news: <http://ebiquity.umbc.edu/ontology/news.owl#> "
-				+ "PREFIX dc: <http://purl.org/dc/terms/> "
-				+ "PREFIX sioc: <http://rdfs.org/sioc/ns#> "
-				+ "PREFIX vocab: <http://localhost:2020/vocab/> "
-				+ "SELECT DISTINCT * "
-				+ "WHERE { "
-					+ "?x a news:News ; "
-					+ "news:title ?title ; "
-					+ "news:publishedOn ?date . "
-					+ "FILTER (?date >= '2015-08-17'^^xsd:dateTime) . "
-				+ "}";
 	}
 	
 	// Q1: Retrieve all news

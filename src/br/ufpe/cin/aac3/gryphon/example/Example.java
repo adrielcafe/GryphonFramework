@@ -34,7 +34,8 @@ public final class Example {
 				+ "LIMIT 100";
 		Gryphon.query(strQuery, ResultFormat.JSON);
 	
-		
+
+		GryphonUtil.logInfo("Finished!");
 		System.exit(0);
 	} 
 	
