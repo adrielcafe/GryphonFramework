@@ -1,6 +1,7 @@
 ### Custom ###
 integrationExample/
-repositories/SYSTEM/
+repositories/
+results/
 .log*
 result.*
 catalog-v*.xml
